@@ -65,6 +65,12 @@ func run_deferred(scene: PackedScene):
 func game_over(win: bool):
 	# Safely pause the world to stop all background chunk generator threads from crashing
 	get_tree().paused= true
+
+	# If the player won and a location was selected, show the antipode animation
+	if win and location_lat != 0.0 and not GOOGLE_API_KEY.is_empty():
+		get_tree().change_scene_to_file.call_deferred("res://game/ui/antipode_zoom_transition.tscn")
+		return
+
 	game_over_label.text= "You won!!" if win else "You lost :("
 	game_over_container.show()
 	
