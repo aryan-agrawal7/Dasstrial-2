@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Item" format=3 uid="uid://bj7ore4godot1"]
+
+[ext_resource type="Script" path="res://game/items/item.gd" id="1_godot"]
+[ext_resource type="Texture2D" uid="uid://cmfohgjcmckor" path="res://game/blocks/godot block/godot.png" id="2_godot"]
+
+[resource]
+script = ExtResource("1_godot")
+texture = ExtResource("2_godot")
+can_stack = true
+tags = Array[Resource("res://game/tags/tag.gd")]([])
+fuel_value = 0.0
+name = "godot_ore"

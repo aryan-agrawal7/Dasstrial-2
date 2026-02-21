@@ -1,0 +1,95 @@
+[gd_resource type="Resource" script_class="TerrainGenerator" load_steps=22 format=3 uid="uid://cdcf6aptu5uo4"]
+
+[ext_resource type="Resource" uid="uid://bv3qfie2av8dh" path="res://game/blocks/stone block/stone_block.tres" id="1_ava8k"]
+[ext_resource type="Script" path="res://game/world/terrain generator/terrain_block_distribution.gd" id="2_ud22x"]
+[ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator_instruction.gd" id="3_0sel7"]
+[ext_resource type="Resource" uid="uid://d12w8mbqpsyov" path="res://game/blocks/coal block/coal_block.tres" id="4_5kwcy"]
+[ext_resource type="Resource" uid="uid://obgjml6tlfcn" path="res://game/blocks/iron block/iron_block.tres" id="5_dkur4"]
+[ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/godot block/godot_block.tres" id="6_cdd3r"]
+[ext_resource type="Resource" uid="uid://cjykj5i260i0c" path="res://game/blocks/air block/air_block.tres" id="7_sqj32"]
+[ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator.gd" id="8_g8it4"]
+[ext_resource type="Resource" uid="uid://mmw13x1t1pjw" path="res://game/blocks/grass block/grass_block.tres" id="9_bjedn"]
+[ext_resource type="Resource" uid="uid://bcgd2xhiy1kks" path="res://game/blocks/gold block/gold_block.tres" id="10_gold"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_busjf"]
+frequency = 0.0287
+
+[sub_resource type="Resource" id="Resource_qdcf6"]
+script = ExtResource("2_ud22x")
+blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("1_ava8k")])
+noise_threshold = 0.0
+
+[sub_resource type="Resource" id="Resource_62246"]
+script = ExtResource("3_0sel7")
+min_height = -100
+max_height = 1024
+distribution = SubResource("Resource_qdcf6")
+is_cave = false
+ignore_height = false
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ores"]
+frequency = 0.2
+
+[sub_resource type="Resource" id="Resource_ores_dist"]
+script = ExtResource("2_ud22x")
+blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("4_5kwcy"), ExtResource("5_dkur4"), ExtResource("10_gold"), ExtResource("6_cdd3r")])
+noise = SubResource("FastNoiseLite_ores")
+noise_threshold = 0.35
+
+[sub_resource type="Resource" id="Resource_ores_inst"]
+script = ExtResource("3_0sel7")
+min_height = 0
+max_height = 1024
+distribution = SubResource("Resource_ores_dist")
+is_cave = false
+ignore_height = false
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_6losj"]
+frequency = 0.0125
+fractal_type = 2
+fractal_octaves = 3
+fractal_lacunarity = 2.41
+fractal_gain = 0.77
+domain_warp_amplitude = 27.995
+metadata/_preview_in_3d_space_ = true
+
+[sub_resource type="Resource" id="Resource_kx2jn"]
+script = ExtResource("2_ud22x")
+blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("7_sqj32")])
+noise = SubResource("FastNoiseLite_6losj")
+noise_threshold = 0.2
+
+[sub_resource type="Resource" id="Resource_wdpor"]
+script = ExtResource("3_0sel7")
+min_height = 0
+max_height = 1024
+distribution = SubResource("Resource_kx2jn")
+is_cave = true
+ignore_height = false
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_3f4av"]
+
+[sub_resource type="Resource" id="Resource_o38dw"]
+script = ExtResource("2_ud22x")
+blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("9_bjedn"), ExtResource("1_ava8k")])
+noise = SubResource("FastNoiseLite_3f4av")
+noise_threshold = 0.0
+
+[sub_resource type="Curve" id="Curve_ghaag"]
+_data = [Vector2(0, 0.320755), 0.0, 1.4, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Resource" id="Resource_pmnpt"]
+script = ExtResource("3_0sel7")
+min_height = -20
+max_height = 10
+distribution = SubResource("Resource_o38dw")
+is_cave = false
+ignore_height = false
+height_curve = SubResource("Curve_ghaag")
+
+[resource]
+script = ExtResource("8_g8it4")
+instructions = Array[ExtResource("3_0sel7")]([SubResource("Resource_62246"), SubResource("Resource_ores_inst"), SubResource("Resource_wdpor"), SubResource("Resource_pmnpt")])
+height_noise = SubResource("FastNoiseLite_busjf")
+height_scale = 10.0

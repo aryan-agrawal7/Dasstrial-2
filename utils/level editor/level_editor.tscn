@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbdvl22708gp"]
+
+[ext_resource type="Script" path="res://utils/level editor/level_editor.gd" id="1_bohj5"]
+
+[node name="Level Editor" type="TileMap"]
+format = 2
+layer_0/name = "terrain"
+layer_1/name = "fluids"
+layer_1/z_index = 20
+layer_1/navigation_enabled = false
+layer_1/tile_data = PackedInt32Array()
+script = ExtResource("1_bohj5")
