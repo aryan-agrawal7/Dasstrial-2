@@ -8,6 +8,9 @@ extends Resource
 
 var cave_cache: Array[Vector2i]
 
+var black_finish_block: Block = preload("res://game/blocks/finish_blocks/black_finish_block.tres")
+var white_finish_block: Block = preload("res://game/blocks/finish_blocks/white_finish_block.tres")
+var bottom_limit: int = 150
 
 
 func initialize():
@@ -16,6 +19,17 @@ func initialize():
 
 
 func get_block_id(pos: Vector2i)-> int:
+	if pos.x < -25 or pos.x > 25:
+		return -1
+		
+	if pos.y == bottom_limit or pos.y == bottom_limit - 1:
+		if (pos.x + pos.y) % 2 == 0:
+			return DataManager.get_block_id(black_finish_block)
+		else:
+			return DataManager.get_block_id(white_finish_block)
+	elif pos.y > bottom_limit:
+		return -1
+
 	var block: Block
 
 	var cave:= false

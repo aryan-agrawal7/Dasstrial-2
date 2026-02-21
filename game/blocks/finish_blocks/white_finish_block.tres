@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="FinishBlock" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/blocks/finish_block.gd" id="1_fb"]
+[ext_resource type="Texture2D" path="res://game/blocks/finish_blocks/white.png" id="2_fb_tex"]
+
+[resource]
+script = ExtResource("1_fb")
+texture = ExtResource("2_fb_tex")
+hardness = 999999.0
+has_collision = true
+material = 3
+mining_tool = 1
+name = "white_finish"

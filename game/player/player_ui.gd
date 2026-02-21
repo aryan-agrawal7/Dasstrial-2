@@ -102,5 +102,7 @@ func set_interaction_hint(text: String = "", pos: Vector2 = Vector2.ZERO):
 	interaction_hint.text = text
 	interaction_hint.visible = not text.is_empty()
 	if not text.is_empty():
+		if not is_inside_tree(): return
 		await get_tree().process_frame
+		if not is_inside_tree(): return
 		interaction_hint.position = get_viewport().canvas_transform * pos - Vector2(interaction_hint.size.x / 2, 0)

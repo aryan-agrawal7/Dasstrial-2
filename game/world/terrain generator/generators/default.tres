@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="TerrainGenerator" load_steps=16 format=3 uid="uid://rchstnfrc547"]
+[gd_resource type="Resource" script_class="TerrainGenerator" format=3 uid="uid://rchstnfrc547"]
 
 [ext_resource type="Resource" uid="uid://bv3qfie2av8dh" path="res://game/blocks/stone block/stone_block.tres" id="1_6kp5u"]
-[ext_resource type="Script" path="res://game/world/terrain generator/terrain_block_distribution.gd" id="2_od3kv"]
-[ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator_instruction.gd" id="3_1dayd"]
+[ext_resource type="Script" uid="uid://dltuk121b08oo" path="res://game/blocks/block.gd" id="2_gceg7"]
+[ext_resource type="Script" uid="uid://t3sovexvsf6c" path="res://game/world/terrain generator/terrain_block_distribution.gd" id="2_od3kv"]
+[ext_resource type="Script" uid="uid://dtiy17vxtwkxd" path="res://game/world/terrain generator/terrain_generator_instruction.gd" id="3_1dayd"]
 [ext_resource type="Resource" uid="uid://d12w8mbqpsyov" path="res://game/blocks/coal block/coal_block.tres" id="4_kiwak"]
-[ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator.gd" id="5_fhj57"]
+[ext_resource type="Script" uid="uid://cqegevial4msv" path="res://game/world/terrain generator/terrain_generator.gd" id="5_fhj57"]
 [ext_resource type="Resource" uid="uid://obgjml6tlfcn" path="res://game/blocks/iron block/iron_block.tres" id="6_ax1wm"]
 [ext_resource type="Resource" uid="uid://cjykj5i260i0c" path="res://game/blocks/air block/air_block.tres" id="7_7pv86"]
 [ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/godot block/godot_block.tres" id="7_b607x"]
@@ -12,33 +13,25 @@
 
 [sub_resource type="Resource" id="Resource_qdcf6"]
 script = ExtResource("2_od3kv")
-blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("1_6kp5u")])
-noise_threshold = 0.0
+blocks = Array[ExtResource("2_gceg7")]([ExtResource("1_6kp5u")])
 
 [sub_resource type="Resource" id="Resource_62246"]
 script = ExtResource("3_1dayd")
 min_height = -100
-max_height = 1024
 distribution = SubResource("Resource_qdcf6")
-is_cave = false
-ignore_height = false
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_ores"]
 frequency = 0.2
 
 [sub_resource type="Resource" id="Resource_ores_dist"]
 script = ExtResource("2_od3kv")
-blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("4_kiwak"), ExtResource("6_ax1wm"), ExtResource("8_gold"), ExtResource("7_b607x")])
+blocks = Array[ExtResource("2_gceg7")]([ExtResource("4_kiwak"), ExtResource("6_ax1wm"), ExtResource("8_gold"), ExtResource("7_b607x")])
 noise = SubResource("FastNoiseLite_ores")
 noise_threshold = 0.35
 
 [sub_resource type="Resource" id="Resource_ores_inst"]
 script = ExtResource("3_1dayd")
-min_height = 0
-max_height = 1024
 distribution = SubResource("Resource_ores_dist")
-is_cave = false
-ignore_height = false
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_6losj"]
 frequency = 0.0125
@@ -51,19 +44,14 @@ metadata/_preview_in_3d_space_ = true
 
 [sub_resource type="Resource" id="Resource_kx2jn"]
 script = ExtResource("2_od3kv")
-blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("7_7pv86")])
+blocks = Array[ExtResource("2_gceg7")]([ExtResource("7_7pv86")])
 noise = SubResource("FastNoiseLite_6losj")
 noise_threshold = 0.5
 
 [sub_resource type="Resource" id="Resource_wdpor"]
 script = ExtResource("3_1dayd")
-min_height = 0
-max_height = 1024
 distribution = SubResource("Resource_kx2jn")
-is_cave = false
-ignore_height = false
 
 [resource]
 script = ExtResource("5_fhj57")
 instructions = Array[ExtResource("3_1dayd")]([SubResource("Resource_62246"), SubResource("Resource_ores_inst"), SubResource("Resource_wdpor")])
-height_scale = 10.0

@@ -1,17 +1,17 @@
-[gd_scene load_steps=15 format=3 uid="uid://dc0j27pwmaoye"]
+[gd_scene format=3 uid="uid://dc0j27pwmaoye"]
 
-[ext_resource type="Script" path="res://game/world/world.gd" id="1_pmjc8"]
+[ext_resource type="Script" uid="uid://conhoqklr2gfv" path="res://game/world/world.gd" id="1_pmjc8"]
 [ext_resource type="PackedScene" uid="uid://bvx4bb7jk0sr7" path="res://game/world/item/world_item.tscn" id="2_xrbq3"]
 [ext_resource type="PackedScene" uid="uid://dre4owqmev6mn" path="res://game/world/chunks/world_chunk.tscn" id="3_x61oj"]
 [ext_resource type="Resource" uid="uid://rchstnfrc547" path="res://game/world/terrain generator/generators/default.tres" id="4_4gpyw"]
-[ext_resource type="Script" path="res://game/world/components/chunk_updater.gd" id="5_qqsjj"]
+[ext_resource type="Script" uid="uid://d2cdr0koui5hb" path="res://game/world/components/chunk_updater.gd" id="5_qqsjj"]
 [ext_resource type="Resource" uid="uid://di6fjtt37v77v" path="res://game/effects/particles/explosion_particles.tres" id="5_snubo"]
 [ext_resource type="PackedScene" uid="uid://vgl3mtr5d37f" path="res://game/components/debug component/debug_component.tscn" id="7_4bafo"]
-[ext_resource type="Script" path="res://game/world/components/mob spawner/mob_spawner.gd" id="7_otmna"]
-[ext_resource type="Script" path="res://game/world/environment.gd" id="9_xooip"]
+[ext_resource type="Script" uid="uid://5h73olaika08" path="res://game/world/components/mob spawner/mob_spawner.gd" id="7_otmna"]
+[ext_resource type="Script" uid="uid://bppavdiva7itw" path="res://game/world/environment.gd" id="9_xooip"]
 [ext_resource type="PackedScene" uid="uid://dyropcrf6ibvl" path="res://game/world/environment/cloud.tscn" id="10_ljkx7"]
-[ext_resource type="Script" path="res://game/world/backgound.gd" id="11_q7yms"]
-[ext_resource type="Shader" path="res://game/world/environment/sky_shader.gdshader" id="11_r234t"]
+[ext_resource type="Script" uid="uid://bic2f862calvs" path="res://game/world/backgound.gd" id="11_q7yms"]
+[ext_resource type="Shader" uid="uid://b56cqqqqq7k1a" path="res://game/world/environment/sky_shader.gdshader" id="11_r234t"]
 [ext_resource type="Texture2D" uid="uid://cbnmgytutllp" path="res://game/world/environment/stars.png" id="12_2tmry"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kl5xq"]
@@ -19,9 +19,9 @@ shader = ExtResource("11_r234t")
 shader_parameter/horizon_color = Vector3(0.4, 0.4, 1)
 shader_parameter/atmo_color = Vector3(0, 0, 0)
 shader_parameter/height = 1500.0
-shader_parameter/y = null
+shader_parameter/y = 0.0
 
-[node name="World" type="Node2D" node_paths=PackedStringArray("chunks")]
+[node name="World" type="Node2D" unique_id=1951036471 node_paths=PackedStringArray("chunks")]
 script = ExtResource("1_pmjc8")
 generator = ExtResource("4_4gpyw")
 chunks = NodePath("Chunks")
@@ -29,40 +29,40 @@ explosion_particles = ExtResource("5_snubo")
 world_item_scene = ExtResource("2_xrbq3")
 world_chunk_scene = ExtResource("3_x61oj")
 
-[node name="Chunk Updater" type="Node" parent="."]
+[node name="Chunk Updater" type="Node" parent="." unique_id=732535553]
 script = ExtResource("5_qqsjj")
 
-[node name="Update Timer" type="Timer" parent="Chunk Updater"]
+[node name="Update Timer" type="Timer" parent="Chunk Updater" unique_id=1630416049]
 
-[node name="Mob Spawner" type="Node" parent="."]
+[node name="Mob Spawner" type="Node" parent="." unique_id=1866996210]
 script = ExtResource("7_otmna")
 min_player_distance = 30
 
-[node name="Timer" type="Timer" parent="Mob Spawner"]
+[node name="Timer" type="Timer" parent="Mob Spawner" unique_id=707278978]
 wait_time = 0.1
 
-[node name="Chunks" type="Node2D" parent="."]
+[node name="Chunks" type="Node2D" parent="." unique_id=388388101]
 
-[node name="Mobs" type="Node2D" parent="."]
+[node name="Mobs" type="Node2D" parent="." unique_id=1800022558]
 
-[node name="Block Entities" type="Node2D" parent="."]
+[node name="Block Entities" type="Node2D" parent="." unique_id=122201331]
 
-[node name="Debug Component" parent="." instance=ExtResource("7_4bafo")]
+[node name="Debug Component" parent="." unique_id=1756983663 instance=ExtResource("7_4bafo")]
 max_detail_level = 4
 prefix = "World"
 
-[node name="Environment" type="Node" parent="."]
+[node name="Environment" type="Node" parent="." unique_id=1672939649]
 script = ExtResource("9_xooip")
 cloud_scene = ExtResource("10_ljkx7")
 
-[node name="Clouds" type="Node2D" parent="Environment"]
+[node name="Clouds" type="Node2D" parent="Environment" unique_id=563923048]
 z_index = -40
 
-[node name="Backgound" type="CanvasLayer" parent="."]
+[node name="Backgound" type="CanvasLayer" parent="." unique_id=753567911]
 layer = -50
 script = ExtResource("11_q7yms")
 
-[node name="Sky" type="ColorRect" parent="Backgound"]
+[node name="Sky" type="ColorRect" parent="Backgound" unique_id=1170098002]
 material = SubResource("ShaderMaterial_kl5xq")
 anchors_preset = 15
 anchor_right = 1.0
@@ -72,7 +72,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.694118, 1, 1, 1)
 
-[node name="Stars" type="TextureRect" parent="Backgound"]
+[node name="Stars" type="TextureRect" parent="Backgound" unique_id=221956764]
 modulate = Color(1, 1, 1, 0)
 anchors_preset = 15
 anchor_right = 1.0
