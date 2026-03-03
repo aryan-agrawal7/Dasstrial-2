@@ -7,7 +7,6 @@ const TILE_SET_PATH= "res://resources/tile_set.tres"
 @export var blocks_suffix: String
 @export_dir var items_path: String
 @export_dir var block_entities_path: String
-@export_dir var crafting_recipe_path: String
 @export_dir var furnace_recipe_path: String
 @export_dir var mobs_path: String
 @export var mobs_suffix: String
@@ -29,7 +28,6 @@ var block_entities: Array[BlockEntityDefinition]
 
 var items: Array[Item]
 
-var crafting_recipes: Array[CraftingRecipe]
 var furnace_recipes: Dictionary
 
 var mobs: Array[MobDefinition]
@@ -56,8 +54,6 @@ func _ready():
 	load_resource_folder_into_array(items_path, items)
 
 	load_resource_folder_into_array(block_entities_path, block_entities)
-
-	load_resource_folder_into_array(crafting_recipe_path, crafting_recipes)
 
 	load_resource_folder_into_dictionary(furnace_recipe_path, furnace_recipes, "ingredient")
 

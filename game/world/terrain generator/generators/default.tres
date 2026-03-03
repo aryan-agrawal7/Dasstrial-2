@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://cqegevial4msv" path="res://game/world/terrain generator/terrain_generator.gd" id="5_fhj57"]
 [ext_resource type="Resource" uid="uid://obgjml6tlfcn" path="res://game/blocks/iron block/iron_block.tres" id="6_ax1wm"]
 [ext_resource type="Resource" uid="uid://cjykj5i260i0c" path="res://game/blocks/air block/air_block.tres" id="7_7pv86"]
-[ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/godot block/godot_block.tres" id="7_b607x"]
+[ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/diamond block/diamond_block.tres" id="7_b607x"]
 [ext_resource type="Resource" uid="uid://bcgd2xhiy1kks" path="res://game/blocks/gold block/gold_block.tres" id="8_gold"]
 
 [sub_resource type="Resource" id="Resource_qdcf6"]

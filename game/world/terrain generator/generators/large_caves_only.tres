@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator_instruction.gd" id="3_b8msj"]
 [ext_resource type="Resource" uid="uid://d12w8mbqpsyov" path="res://game/blocks/coal block/coal_block.tres" id="5_oc63e"]
 [ext_resource type="Resource" uid="uid://obgjml6tlfcn" path="res://game/blocks/iron block/iron_block.tres" id="6_7fplo"]
-[ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/godot block/godot_block.tres" id="7_fvqae"]
+[ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/diamond block/diamond_block.tres" id="7_fvqae"]
 [ext_resource type="Resource" uid="uid://cjykj5i260i0c" path="res://game/blocks/air block/air_block.tres" id="8_2hlx6"]
 [ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator.gd" id="9_feake"]
 [ext_resource type="Resource" uid="uid://bcgd2xhiy1kks" path="res://game/blocks/gold block/gold_block.tres" id="10_gold"]
