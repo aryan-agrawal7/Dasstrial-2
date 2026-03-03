@@ -11,6 +11,7 @@ extends CanvasLayer
 @onready var antipode_label: Label = $AntipodeLabel
 @onready var location_label: Label = $LocationLabel
 @onready var home_button: Button = $HomeButton
+@onready var run_time_label: Label = $RunTimeLabel
 
 ## Satellite zoom levels: full set for land, reduced for water
 const ZOOM_LEVELS_LAND: Array[int] = [2, 5, 8, 11, 14, 17]
@@ -29,6 +30,10 @@ var antipode_lng: float = 0.0
 
 
 func _ready():
+	# CRITICAL: unpause immediately — we paused to stop chunk threads before this scene loaded.
+	# All tweens and buttons need the tree to be running.
+	get_tree().paused = false
+
 	map_a.pivot_offset = map_a.size / 2
 	map_b.pivot_offset = map_b.size / 2
 	map_a.modulate.a = 0
@@ -40,6 +45,14 @@ func _ready():
 	location_label.modulate.a = 0
 	home_button.modulate.a = 0
 	home_button.hide()
+	run_time_label.modulate.a = 0
+
+	# Show final run time
+	var t: float = GameManager.final_run_time
+	var mins := int(t) / 60
+	var secs := int(t) % 60
+	var ms := int((t - int(t)) * 100)
+	run_time_label.text = "Run time: %02d:%02d:%02d" % [mins, secs, ms]
 
 	# Calculate the antipode: negate latitude, shift longitude by 180°
 	antipode_lat = -GameManager.location_lat
@@ -237,14 +250,17 @@ func _show_character_overlay():
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	await loc_tween.finished
 
-	# Show the Home button
+	# Show the Home button and run time together
 	home_button.show()
-	var btn_tween = create_tween()
-	btn_tween.tween_property(home_button, "modulate:a", 1.0, 0.4) \
+	var final_tween = create_tween().set_parallel()
+	final_tween.tween_property(home_button, "modulate:a", 1.0, 0.4) \
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	await btn_tween.finished
+	final_tween.tween_property(run_time_label, "modulate:a", 1.0, 0.4) \
+		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	await final_tween.finished
 
 
 func _return_to_menu():
-	await get_tree().create_timer(0.3, true, false, true).timeout
-	GameManager.load_main_menu()
+	# Directly change to main menu — bypass load_main_menu() to avoid any state issues.
+	get_tree().paused = false
+	get_tree().change_scene_to_packed(GameManager.main_menu)

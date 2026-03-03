@@ -173,7 +173,9 @@ func sidescroll_movement(delta):
 		var floor_block_1 = get_world().get_block(get_tile_pos() + Vector2i(0, 1))
 		var floor_block_2 = get_world().get_block(get_tile_pos() + Vector2i(0, 2))
 		if (floor_block_1 and floor_block_1 is FinishBlockScript) or (floor_block_2 and floor_block_2 is FinishBlockScript):
-			Global.game.game_over(true)
+			if not GameManager._game_over_triggered:
+				Global.game.game_over(true)
+
 
 	move_and_slide()
 
@@ -243,15 +245,14 @@ func auto_mine(delta: float):
 func try_auto_mine_block(world: World, pos: Vector2i):
 	var block: Block = world.get_block(pos)
 	if block and block.can_be_mined():
-		drill_sharpness -= block.hardness*0.25
-		drill_sharpness = max(drill_sharpness, 0	)
-		# If the block drops an ore item, add it directly to the counter
+		drill_sharpness -= block.hardness * 0.25
+		drill_sharpness = max(drill_sharpness, 0)
+		# If the block drops an item, add it directly to the ore counter
 		if block.drop:
 			ore_counter.add_ore(block.drop)
 		# Break the block without spawning world items (with_drops = false)
 		world.break_block(pos, false)
 		break_block.emit(block)
-
 
 func fly(_delta: float):
 	var direction: Vector2= Input.get_vector("left", "right", "up", "down")
