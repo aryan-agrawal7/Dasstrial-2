@@ -79,20 +79,21 @@ func _update_ore_display():
 
 func update_health():
 	var ratio: float = health.hitpoints / health.max_hitpoints
+	health_bar.value = ratio * 100
 	if is_equal_approx(ratio, 1.0):
-		health_bar.show()
+		health_bar.hide()
 	else:
-		health_bar.value = ratio * 100
 		health_bar.show()
 
 
 func hurt_effect(_damage, _hitpoints):
 	if hurt_effect_tween and hurt_effect_tween.is_running():
 		hurt_effect_tween.kill()
+	health_bar.modulate = Color.WHITE
 	hurt_effect_tween = create_tween()
+	hurt_effect_tween.set_loops(3)
 	hurt_effect_tween.tween_property(health_bar, "modulate", Color.TRANSPARENT, 0.1)
 	hurt_effect_tween.tween_property(health_bar, "modulate", Color.WHITE, 0.1)
-	hurt_effect_tween.set_loops(3)
 
 
 ## Stub methods kept so other code doesn't crash if it still references them
@@ -118,4 +119,3 @@ func update_subsystems():
 	hull_temp.value=player.hull_temp
 	hull_integrity.value=player.hull_integrity
 	drill_sharpness.value=player.drill_sharpness
-	health_bar.value=player.health.hitpoints
