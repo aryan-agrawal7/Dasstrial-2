@@ -28,6 +28,13 @@ const GOOGLE_API_KEY: String = "AIzaSyCSXKeE_7gAv4lNfGBVoOupdoQ0LlCCzIQ"
 
 var game_start_resource: GameStart
 
+## Guards against game_over() being called multiple times in the same frame
+## (e.g. from _physics_process while standing on finish blocks).
+var _game_over_triggered: bool = false
+
+## Stores final run time so the antipode screen can display it
+var final_run_time: float = 0.0
+
 
 func init():
 	if not ResourceLoader.exists(RESOURCE_PATH):
@@ -53,23 +60,33 @@ func run_game(scene: PackedScene):
 
 
 func run_deferred(scene: PackedScene):
+	_game_over_triggered = false
 	assert(get_tree().change_scene_to_packed(scene) == OK)
 
 
 func game_over(win: bool):
-	# Safely pause the world to stop all background chunk generator threads from crashing
-	get_tree().paused= true
+	# Guard: only execute once per game session
+	if _game_over_triggered:
+		return
+	_game_over_triggered = true
 
-	# If the player won and a location was selected, show the antipode animation
+	# Save the final run time before stopping the timer
+	final_run_time = GameTimer.elapsed_time
+	GameTimer.stop_timer()
+
+	# Pause the world FIRST to stop background chunk generator threads from crashing.
+	get_tree().paused = true
+
+	# If the player won and a location was selected, show the antipode animation.
+	# The antipode scene will unpause immediately in its own _ready().
 	if win and location_lat != 0.0 and not GOOGLE_API_KEY.is_empty():
 		get_tree().change_scene_to_file.call_deferred("res://game/ui/antipode_zoom_transition.tscn")
 		return
 
-	game_over_label.text= "You won!!" if win else "You lost :("
+	game_over_label.text = "You won!!!" if win else "You lost :("
 	game_over_container.show()
 	
-	# Auto-exit cleanly after showing the screen for 2 seconds.
-	# We pass `true, false, true` to ensure the timer counts down even while the game is paused.
+	# Auto-exit cleanly after 2 seconds (timer runs while paused via process_always=true)
 	await get_tree().create_timer(2.0, true, false, true).timeout
 	load_main_menu()
 
@@ -84,8 +101,8 @@ func _on_exit_button_pressed():
 
 
 func load_main_menu():
-	get_tree().paused= true
 	game_over_container.hide()
+	get_tree().paused = false
 	get_tree().change_scene_to_packed.call_deferred(main_menu)
 
 
