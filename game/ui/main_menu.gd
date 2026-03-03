@@ -2,7 +2,6 @@ extends CanvasLayer
 
 
 @onready var game_mode_item_list = %"Game Mode ItemList"
-@onready var seed_line_edit = %"Seed LineEdit"
 @onready var skin_water: TextureButton = %"Skin Water"
 @onready var skin_fire: TextureButton = %"Skin Fire"
 @onready var location_line_edit: LineEdit = %"Location LineEdit"
@@ -27,8 +26,6 @@ var _place_details_http: HTTPRequest
 func _ready():
 	get_tree().paused= false
 	
-	if GameManager.world_seed:
-		seed_line_edit.text= GameManager.world_seed
 	
 	populate_lists()
 	
@@ -169,7 +166,7 @@ func _on_close_button_pressed():
 
 
 func _on_play_button_pressed():
-	GameManager.world_seed = seed_line_edit.text
+	GameManager.world_seed = str(randi())
 	GameManager.character = DataManager.characters[0]
 	GameManager.skin_path = selected_skin_path
 	GameManager.location_name = selected_location_name
