@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Item" format=3 uid="uid://dby2216q3medp"]
+
+[ext_resource type="Script" uid="uid://xsms438c3077" path="res://game/items/item.gd" id="1_lhswt"]
+[ext_resource type="Script" uid="uid://d4mod5cyhdbbi" path="res://game/tags/tag.gd" id="2_8uxig"]
+[ext_resource type="Texture2D" uid="uid://cl5xbxp01bj06" path="res://game/blocks/water blocks/water.png" id="3_8uxig"]
+
+[resource]
+script = ExtResource("1_lhswt")
+texture = ExtResource("3_8uxig")
+metadata/_custom_type_script = "uid://xsms438c3077"

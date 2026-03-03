@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b4uyq2o7u54dp"]
 
-[ext_resource type="Script" path="res://game/player/player_ui.gd" id="1_cefh8"]
+[ext_resource type="Script" uid="uid://clhbfp352g74s" path="res://game/player/player_ui.gd" id="1_cefh8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vepwu"]
 bg_color = Color(0.6, 0.6, 0.6, 0.12549)
@@ -21,20 +21,20 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orepanel"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 10.0
 bg_color = Color(0.1, 0.1, 0.1, 0.6)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
 
-[node name="Player UI" type="CanvasLayer"]
+[node name="Player UI" type="CanvasLayer" unique_id=59640651]
 script = ExtResource("1_cefh8")
 
-[node name="Interaction Hint" type="Label" parent="."]
+[node name="Interaction Hint" type="Label" parent="." unique_id=1468919]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 8
@@ -50,26 +50,49 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 
-[node name="Health" type="MarginContainer" parent="."]
+[node name="Health" type="MarginContainer" parent="." unique_id=532300581]
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_constants/margin_top = 30
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
 
-[node name="ProgressBar Health" type="ProgressBar" parent="Health"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Health" unique_id=2028978734]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="Player Health" type="ProgressBar" parent="Health/VBoxContainer" unique_id=781862528]
 unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(500, 20)
+custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_vepwu")
 theme_override_styles/fill = SubResource("StyleBoxFlat_noruo")
-value = 90.0
 show_percentage = false
 
-[node name="Ore Panel" type="MarginContainer" parent="."]
+[node name="Hull Integrity" type="ProgressBar" parent="Health/VBoxContainer" unique_id=1923616465]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+step = 0.1
+show_percentage = false
+
+[node name="Drill Sharpness" type="ProgressBar" parent="Health/VBoxContainer" unique_id=768893488]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+show_percentage = false
+
+[node name="Hull Temperature" type="ProgressBar" parent="Health/VBoxContainer" unique_id=800596052]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 2
+show_percentage = false
+
+[node name="Ore Panel" type="MarginContainer" parent="." unique_id=1449697365]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -78,12 +101,12 @@ mouse_filter = 2
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 
-[node name="PanelContainer" type="PanelContainer" parent="Ore Panel"]
+[node name="PanelContainer" type="PanelContainer" parent="Ore Panel" unique_id=1640301929]
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_orepanel")
 
-[node name="Ore Container" type="VBoxContainer" parent="Ore Panel/PanelContainer"]
+[node name="Ore Container" type="VBoxContainer" parent="Ore Panel/PanelContainer" unique_id=1507297181]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
