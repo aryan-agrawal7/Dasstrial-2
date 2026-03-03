@@ -43,6 +43,10 @@ var block_change_subscriptions:= {}
 func _ready():
 	set_physics_process(false)
 	
+	var fog = CanvasModulate.new()
+	fog.color = Color(0.1, 0.1, 0.1, 1.0)
+	add_child(fog)
+	
 	if disable_background:
 		backgound.queue_free()
 	
