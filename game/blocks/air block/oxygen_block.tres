@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://b2wrj2rd5cmuw"]
+
+[ext_resource type="Script" uid="uid://dltuk121b08oo" path="res://game/blocks/block.gd" id="1_sxrqy"]
+[ext_resource type="Script" uid="uid://d4mod5cyhdbbi" path="res://game/tags/tag.gd" id="2_k3xxh"]
+[ext_resource type="Texture2D" uid="uid://c7m7avvkcyyu2" path="res://game/blocks/air block/oxygen_block.png" id="3_k3xxh"]
+
+[resource]
+script = ExtResource("1_sxrqy")
+texture = ExtResource("3_k3xxh")
+name = "oxygen"
+metadata/_custom_type_script = "uid://dltuk121b08oo"
