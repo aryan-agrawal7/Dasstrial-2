@@ -45,13 +45,7 @@ func init():
 		get_tree().change_scene_to_packed.call_deferred(main_menu)
 
 
-func _unhandled_key_input(event):
-	var key_event: InputEventKey= event
-	if key_event.is_pressed() and key_event.keycode == KEY_ESCAPE:
-		if is_ingame():
-			load_main_menu()
-		else:
-			get_tree().quit()
+## ESC is now handled by the PauseMenu autoload (res://game/ui/pause_menu.tscn)
 
 
 func run_game(scene: PackedScene):
