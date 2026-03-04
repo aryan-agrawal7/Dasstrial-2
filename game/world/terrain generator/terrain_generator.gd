@@ -80,15 +80,16 @@ func get_block_id(pos: Vector2i)-> int:
 ## Oxygen pods: Core zone (high pressure, concentrated gas pockets)
 func _get_pod_block(pos: Vector2i) -> Block:
 	var y := pos.y
+	var bonus: float = GameManager.ore_spawn_bonus if GameManager else 0.0
 
 	# Water pods — appear in both mantle bands
 	if (y >= 25 and y < 65) or (y >= 85 and y < 125):
-		if _water_noise.get_noise_2d(pos.x, pos.y) > 0.72:
+		if _water_noise.get_noise_2d(pos.x, pos.y) > (0.50 - bonus):
 			return water_pod_block
 
 	# Oxygen pods — concentrated in the core and transition zones
 	if y >= 50 and y < 115:
-		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > 0.76:
+		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > (0.55 - bonus):
 			return oxygen_pod_block
 
 	return null

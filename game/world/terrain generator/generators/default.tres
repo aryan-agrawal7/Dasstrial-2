@@ -25,9 +25,10 @@ frequency = 0.2
 
 [sub_resource type="Resource" id="Resource_ores_dist"]
 script = ExtResource("2_od3kv")
-blocks = Array[ExtResource("2_gceg7")]([ExtResource("4_kiwak"), ExtResource("6_ax1wm"), ExtResource("8_gold"), ExtResource("7_b607x")])
+blocks = Array[ExtResource("2_gceg7")]([ExtResource("6_ax1wm"), ExtResource("4_kiwak"), ExtResource("7_b607x"), ExtResource("8_gold")])
 noise = SubResource("FastNoiseLite_ores")
 noise_threshold = 0.35
+noise_thresholds = PackedFloat32Array(0.2, 0.35, 0.5, 0.6)
 
 [sub_resource type="Resource" id="Resource_ores_inst"]
 script = ExtResource("3_1dayd")

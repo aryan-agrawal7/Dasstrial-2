@@ -4,6 +4,9 @@ extends Resource
 @export var blocks: Array[Block]
 @export var noise: FastNoiseLite
 @export var noise_threshold: float
+## Per-block thresholds (optional). If set, overrides noise_threshold per block.
+## Higher threshold = rarer ore. Order must match blocks array.
+@export var noise_thresholds: PackedFloat32Array = PackedFloat32Array()
 
 var processed_noises: Array[FastNoiseLite]
 
@@ -29,8 +32,11 @@ func get_block(pos: Vector2i)-> Block:
 	# Collect all blocks whose noise qualifies, then pick one at random
 	# This ensures equal spawn chance when multiple ores share the same threshold
 	var candidates: Array[Block] = []
+	var bonus: float = GameManager.ore_spawn_bonus if GameManager else 0.0
 	for i in len(blocks):
-		if processed_noises[i].get_noise_2dv(pos) > noise_threshold:
+		var threshold: float = noise_thresholds[i] if i < noise_thresholds.size() else noise_threshold
+		threshold -= bonus
+		if processed_noises[i].get_noise_2dv(pos) > threshold:
 			candidates.append(blocks[i])
 	if candidates.is_empty():
 		return null

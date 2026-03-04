@@ -42,22 +42,10 @@ func get_count_by_name(ore_name: String) -> int:
 		return counts[ore_name]
 	return 0
 	
-func consume_item(item_name: String, player: BasePlayer) -> bool:
+func consume_item(item_name: String, _player: BasePlayer) -> bool:
 	if item_name in counts and counts[item_name] > 0:
 		counts[item_name] -= 1
-		updated.emit() # Notify UI to update counts
-		
-		# Apply your specific healing/repair logic
-		match item_name:
-			"Water Pod":
-				player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 20)
-				player.hull_temp = min(player.max_hull_temp, player.hull_temp + 20)
-			"Oxygen Pod":
-				player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 40)
-			"iron_ore":
-				player.drill_sharpness = min(player.max_sharpness, player.drill_sharpness+25)
-			"gold_ore":
-				player.hull_integrity = min(player.max_integrity, player.hull_integrity + 20)
+		updated.emit()
 		return true
 	return false
 
