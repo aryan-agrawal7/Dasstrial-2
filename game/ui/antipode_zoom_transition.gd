@@ -227,8 +227,6 @@ func _show_character_overlay():
 	await char_tween.finished
 
 	await get_tree().create_timer(0.3).timeout
-
-	# Animate the "You reached the antipode!" text
 	antipode_label.scale = Vector2(0.3, 0.3)
 	var text_tween = create_tween().set_parallel()
 	text_tween.tween_property(antipode_label, "modulate:a", 1.0, 0.5) \
@@ -250,14 +248,6 @@ func _show_character_overlay():
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	await loc_tween.finished
 
-	# Show the Home button and run time together
-	home_button.show()
-	var final_tween = create_tween().set_parallel()
-	final_tween.tween_property(home_button, "modulate:a", 1.0, 0.4) \
-		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	final_tween.tween_property(run_time_label, "modulate:a", 1.0, 0.4) \
-		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-	await final_tween.finished
 
 
 func _return_to_menu():

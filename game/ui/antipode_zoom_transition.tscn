@@ -1,10 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://bnasidx27wc6d"]
 
-[ext_resource type="Script" path="res://game/ui/antipode_zoom_transition.gd" id="1_script"]
+[ext_resource type="Script" uid="uid://ckjo7slxf1lcp" path="res://game/ui/antipode_zoom_transition.gd" id="1_script"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_antipode"]
 font_size = 48
-font_color = Color(1, 1, 1, 1)
 outline_size = 6
 outline_color = Color(0, 0, 0, 1)
 shadow_size = 4
@@ -21,21 +20,21 @@ shadow_color = Color(0, 0, 0, 0.5)
 shadow_offset = Vector2(2, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_home_btn"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
 bg_color = Color(0.15, 0.45, 0.35, 0.9)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-content_margin_left = 24.0
-content_margin_top = 10.0
-content_margin_right = 24.0
-content_margin_bottom = 10.0
 
-[node name="Antipode Zoom Transition" type="CanvasLayer"]
+[node name="Antipode Zoom Transition" type="CanvasLayer" unique_id=811691398]
 process_mode = 3
 script = ExtResource("1_script")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=780501467]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -43,7 +42,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.02, 0.02, 0.05, 1)
 
-[node name="MapA" type="TextureRect" parent="."]
+[node name="MapA" type="TextureRect" parent="." unique_id=1073288797]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -52,7 +51,7 @@ grow_vertical = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="MapB" type="TextureRect" parent="."]
+[node name="MapB" type="TextureRect" parent="." unique_id=1243378455]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -61,7 +60,7 @@ grow_vertical = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="CharacterSprite" type="TextureRect" parent="."]
+[node name="CharacterSprite" type="TextureRect" parent="." unique_id=130607274]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -76,7 +75,7 @@ grow_vertical = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="AntipodeLabel" type="Label" parent="."]
+[node name="AntipodeLabel" type="Label" parent="." unique_id=2118349154]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -91,7 +90,7 @@ label_settings = SubResource("LabelSettings_antipode")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="LocationLabel" type="Label" parent="."]
+[node name="LocationLabel" type="Label" parent="." unique_id=2106382523]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -103,32 +102,31 @@ offset_right = 350.0
 offset_bottom = -50.0
 grow_horizontal = 2
 grow_vertical = 0
-text = ""
 label_settings = SubResource("LabelSettings_location")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="RunTimeLabel" type="Label" parent="."]
+[node name="RunTimeLabel" type="Label" parent="." unique_id=71697271]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -78.0
-offset_right = 150.0
-offset_bottom = -48.0
+offset_left = -147.0
+offset_top = -510.0
+offset_right = 153.0
+offset_bottom = -480.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Run time: 00:00:00"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.9, 0.95, 1.0, 1.0)
-theme_override_colors/font_shadow_color = Color(0.0, 0.0, 0.0, 0.85)
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 20
+text = "Run time: 00:00:00"
+horizontal_alignment = 1
 
-[node name="HomeButton" type="Button" parent="."]
+[node name="HomeButton" type="Button" parent="." unique_id=1577325604]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -144,15 +142,17 @@ theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_home_btn")
 text = "Home"
 
-[node name="Fade" type="ColorRect" parent="."]
+[node name="Fade" type="ColorRect" parent="." unique_id=646910754]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = 5.0
+offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0)
 
-[node name="Loading Label" type="Label" parent="."]
+[node name="Loading Label" type="Label" parent="." unique_id=682446426]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
