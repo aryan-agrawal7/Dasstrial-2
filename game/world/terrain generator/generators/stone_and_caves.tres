@@ -15,7 +15,7 @@ noise_threshold = 0.0
 script = ExtResource("3_mthxs")
 priority = 1
 min_height = -100
-max_height = 1024
+max_height = 2000
 distribution = SubResource("Resource_0omqx")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_0jp82"]
@@ -37,7 +37,7 @@ noise_threshold = 0.5
 script = ExtResource("3_mthxs")
 priority = 0
 min_height = 0
-max_height = 1024
+max_height = 2000
 distribution = SubResource("Resource_0yq5w")
 
 [resource]

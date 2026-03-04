@@ -10,10 +10,10 @@ var cave_cache: Array[Vector2i]
 
 var black_finish_block: Block = preload("res://game/blocks/finish_blocks/black_finish_block.tres")
 var white_finish_block: Block = preload("res://game/blocks/finish_blocks/white_finish_block.tres")
-var bottom_limit: int = 150
+var bottom_limit: int = 1050
 
 ## Section boundary y-values (used by world.gd for checkpoint placement)
-var section_boundaries: Array[int] = [30, 60, 90, 120]
+var section_boundaries: Array[int] = [300, 450, 600, 750]
 
 ## Pod blocks — generated as veins in specific depth zones
 var water_pod_block: Block = preload("res://game/blocks/water_pod_block/water_pod_block.tres")
@@ -110,13 +110,13 @@ func get_height(x: int)-> int:
 
 ## Returns a section name for the given y-position
 func get_section_name(y: int) -> String:
-	if y < 30:
+	if y < 300:
 		return "Crust"
-	elif y < 60:
+	elif y < 450:
 		return "Mantle"
-	elif y < 90:
+	elif y < 600:
 		return "Core"
-	elif y < 120:
+	elif y < 750:
 		return "Mantle-2"
 	else:
 		return "Crust-2"
