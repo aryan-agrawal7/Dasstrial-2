@@ -84,12 +84,12 @@ func _get_pod_block(pos: Vector2i) -> Block:
 
 	# Water pods — appear in both mantle bands
 	if (y >= 25 and y < 65) or (y >= 85 and y < 125):
-		if _water_noise.get_noise_2d(pos.x, pos.y) > (0.50 - bonus):
+		if _water_noise.get_noise_2d(pos.x, pos.y) > (0.65 - bonus):
 			return water_pod_block
 
 	# Oxygen pods — concentrated in the core and transition zones
 	if y >= 50 and y < 115:
-		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > (0.55 - bonus):
+		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > (0.70 - bonus):
 			return oxygen_pod_block
 
 	return null

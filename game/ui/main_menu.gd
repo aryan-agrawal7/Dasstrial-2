@@ -1,7 +1,6 @@
 extends CanvasLayer
 
 
-@onready var game_mode_item_list = %"Game Mode ItemList"
 @onready var skin_water: TextureButton = %"Skin Water"
 @onready var skin_fire: TextureButton = %"Skin Fire"
 @onready var location_line_edit: LineEdit = %"Location LineEdit"
@@ -25,9 +24,6 @@ var _place_details_http: HTTPRequest
 
 func _ready():
 	get_tree().paused= false
-	
-	
-	populate_lists()
 	
 	# Set up skin selection buttons
 	skin_water.pressed.connect(_on_skin_selected.bind("res://game/Water-air.png", skin_water, skin_fire))
@@ -63,16 +59,6 @@ func _setup_location_autocomplete():
 		location_line_edit.placeholder_text = "Set GOOGLE_API_KEY in game_manager.gd"
 		location_line_edit.editable = false
 
-
-func populate_lists():
-	for scenario in DataManager.builtin_scenarios + DataManager.scenarios:
-		game_mode_item_list.add_item(get_scene_name(scenario))
-
-	game_mode_item_list.select(0)
-
-
-func get_scene_name(scene: PackedScene)-> String:
-	return scene.resource_path.rsplit("/")[-1].trim_suffix(".tscn").capitalize()
 
 
 func _on_skin_selected(path: String, selected_btn: TextureButton, other_btn: TextureButton):
@@ -172,8 +158,8 @@ func _on_play_button_pressed():
 	GameManager.location_name = selected_location_name
 	GameManager.location_lat = selected_location_lat
 	GameManager.location_lng = selected_location_lng
-	var scenarios: Array[PackedScene] = DataManager.builtin_scenarios + DataManager.scenarios
-	GameManager.game_scene_to_load = scenarios[game_mode_item_list.get_selected_items()[0]]
+	# Always use Freeplay (first built-in scenario)
+	GameManager.game_scene_to_load = DataManager.builtin_scenarios[0]
 	# Show zoom transition if location is selected and API key exists
 	if selected_location_lat != 0.0 and not GameManager.GOOGLE_API_KEY.is_empty():
 		get_tree().change_scene_to_file("res://game/ui/map_zoom_transition.tscn")
