@@ -10,10 +10,10 @@ var cave_cache: Array[Vector2i]
 
 var black_finish_block: Block = preload("res://game/blocks/finish_blocks/black_finish_block.tres")
 var white_finish_block: Block = preload("res://game/blocks/finish_blocks/white_finish_block.tres")
-var bottom_limit: int = 150
+var bottom_limit: int = 1050
 
 ## Section boundary y-values (used by world.gd for checkpoint placement)
-var section_boundaries: Array[int] = [30, 60, 90, 120]
+var section_boundaries: Array[int] = [300, 450, 600, 750]
 
 ## Pod blocks — generated as veins in specific depth zones
 var water_pod_block: Block = preload("res://game/blocks/water_pod_block/water_pod_block.tres")
@@ -81,13 +81,13 @@ func get_block_id(pos: Vector2i)-> int:
 func _get_pod_block(pos: Vector2i) -> Block:
 	var y := pos.y
 
-	# Water pods — appear in both mantle bands
-	if (y >= 25 and y < 65) or (y >= 85 and y < 125):
+	# Water pods — appear in both mantle bands (Y: 300->449 and 600->749)
+	if (y >= 250 and y < 450) or (y >= 600 and y < 800):
 		if _water_noise.get_noise_2d(pos.x, pos.y) > 0.72:
 			return water_pod_block
 
-	# Oxygen pods — concentrated in the core and transition zones
-	if y >= 50 and y < 115:
+	# Oxygen pods — concentrated in the core and transition zones (Y: 450->599)
+	if y >= 400 and y < 650:
 		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > 0.76:
 			return oxygen_pod_block
 
@@ -109,13 +109,13 @@ func get_height(x: int)-> int:
 
 ## Returns a section name for the given y-position
 func get_section_name(y: int) -> String:
-	if y < 30:
+	if y < 300:
 		return "Crust"
-	elif y < 60:
+	elif y < 450:
 		return "Mantle"
-	elif y < 90:
+	elif y < 600:
 		return "Core"
-	elif y < 120:
+	elif y < 750:
 		return "Mantle-2"
 	else:
 		return "Crust-2"

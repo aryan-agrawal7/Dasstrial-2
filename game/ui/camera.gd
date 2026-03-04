@@ -11,8 +11,8 @@ func _ready():
 	limit_left = -800
 	limit_right = 800
 	
-	# Bottom limit: 150 tiles * 32 pixels per tile = 4800 pixels
-	limit_bottom = 4800
+	# Bottom limit: 1050 tiles * 32 pixels per tile = 33600 pixels. We pad it to 34000 so the finish line is fully visible.
+	limit_bottom = 34000
 
 
 func _process(delta):
@@ -26,6 +26,6 @@ func _process(delta):
 		# You can adjust these numbers to perfectly hug the edge of your screen!
 		var target_x = clamp(follow_node.global_position.x, -640, 640)
 		# We also clamp the Y coordinate to stop the camera from showing the void below
-		# 150 tiles * 32 pixels = 4800. We stop the camera center slightly above that.
-		var target_y = min(follow_node.global_position.y, 4500)
+		# 1050 tiles * 32 pixels = 33600.
+		var target_y = min(follow_node.global_position.y, 33600)
 		position= Vector2(target_x, target_y)
