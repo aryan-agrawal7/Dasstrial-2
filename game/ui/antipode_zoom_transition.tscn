@@ -19,17 +19,6 @@ shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.5)
 shadow_offset = Vector2(2, 2)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_home_btn"]
-content_margin_left = 24.0
-content_margin_top = 10.0
-content_margin_right = 24.0
-content_margin_bottom = 10.0
-bg_color = Color(0.15, 0.45, 0.35, 0.9)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
 [node name="Antipode Zoom Transition" type="CanvasLayer" unique_id=811691398]
 process_mode = 3
 script = ExtResource("1_script")
@@ -125,22 +114,6 @@ theme_override_constants/shadow_offset_y = 1
 theme_override_font_sizes/font_size = 20
 text = "Run time: 00:00:00"
 horizontal_alignment = 1
-
-[node name="HomeButton" type="Button" parent="." unique_id=1577325604]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -70.0
-offset_top = -42.0
-offset_right = 70.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("StyleBoxFlat_home_btn")
-text = "Home"
 
 [node name="Fade" type="ColorRect" parent="." unique_id=646910754]
 anchors_preset = 15
