@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dltuk121b08oo" path="res://game/blocks/block.gd" id="1_blk"]
 [ext_resource type="Resource" uid="uid://cidftgkq4ew02" path="res://game/items/oxygen_pod/oxygen_pod.tres" id="2_drop"]
 [ext_resource type="Script" uid="uid://d4mod5cyhdbbi" path="res://game/tags/tag.gd" id="3_syq74"]
-[ext_resource type="Texture2D" uid="uid://cj1nb3ibx7llb" path="res://game/blocks/water blocks/water_quarter.png" id="4_syq74"]
+[ext_resource type="Texture2D" uid="uid://cj1nb3ibx7llb" path="res://game/blocks/oxygen_pod_block/oxygen_block.png" id="4_syq74"]
 
 [resource]
 script = ExtResource("1_blk")

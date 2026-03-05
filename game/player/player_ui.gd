@@ -8,10 +8,10 @@ extends CanvasLayer
 
 
 @onready var player: BasePlayer = get_parent()
-@onready var health_bar: ProgressBar = %"Player Health"
-@onready var hull_temp: ProgressBar = %"Hull Temperature"
-@onready var hull_integrity: ProgressBar = %"Hull Integrity"
-@onready var drill_sharpness: ProgressBar = %"Drill Sharpness"
+@onready var health_bar: GaugeDial = %"Player Health"
+@onready var hull_temp: GaugeDial = %"Hull Temperature"
+@onready var hull_integrity: GaugeDial = %"Hull Integrity"
+@onready var drill_sharpness: GaugeDial = %"Drill Sharpness"
 @onready var ore_container: VBoxContainer = %"Ore Container"
 @onready var interaction_hint: Label = %"Interaction Hint"
 
@@ -19,14 +19,19 @@ extends CanvasLayer
 ## References to ore count labels, keyed by ore item name
 var ore_labels: Dictionary = {}
 
-var hurt_effect_tween: Tween
+
+
+## Red screen-edge vignette overlay
+var danger_vignette: ColorRect
+var vignette_material: ShaderMaterial
 
 
 func _ready():
 	assert(player)
 	assert(health)
 
-	health.report_damage.connect(hurt_effect)
+	# Build the red vignette overlay (full-screen, above everything)
+	_build_danger_vignette()
 
 	# Defer building the ore display — the player's _ready() hasn't run yet
 	# (children are ready before parents in Godot), so ore_counter.ore_items
@@ -38,6 +43,7 @@ func _ready():
 func _process(_delta):
 	update_health()
 	update_subsystems()
+	_update_danger_vignette()
 
 
 func _connect_ore_counter():
@@ -79,21 +85,56 @@ func _update_ore_display():
 
 func update_health():
 	var ratio: float = health.hitpoints / health.max_hitpoints
-	health_bar.value = ratio * 100
-	if is_equal_approx(ratio, 1.0):
-		health_bar.hide()
+	health_bar.gauge_value = ratio * 100.0
+
+
+
+
+
+func _build_danger_vignette() -> void:
+	var shader := Shader.new()
+	shader.code = "
+	shader_type canvas_item;
+	uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+	void fragment() {
+		vec2 uv = UV;
+		float dx = max(0.0, 0.3 - uv.x) / 0.3;
+		float dy = max(0.0, 0.3 - uv.y) / 0.3;
+		float dx2 = max(0.0, uv.x - 0.7) / 0.3;
+		float dy2 = max(0.0, uv.y - 0.7) / 0.3;
+		float edge = max(max(dx, dx2), max(dy, dy2));
+		edge = pow(edge, 1.5);
+		COLOR = vec4(1.0, 0.05, 0.0, edge * intensity);
+	}
+	"
+	vignette_material = ShaderMaterial.new()
+	vignette_material.shader = shader
+	vignette_material.set_shader_parameter("intensity", 0.0)
+
+	danger_vignette = ColorRect.new()
+	danger_vignette.material = vignette_material
+	danger_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	danger_vignette.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(danger_vignette)
+
+
+func _update_danger_vignette() -> void:
+	# Check all 4 metrics — flash if ANY is below 10%
+	var health_pct: float = (health.hitpoints / health.max_hitpoints) * 100.0
+	var temp_pct: float = (player.hull_temp / player.max_hull_temp) * 100.0 if player.max_hull_temp > 0 else 100.0
+	var integrity_pct: float = (player.hull_integrity / player.max_integrity) * 100.0 if player.max_integrity > 0 else 100.0
+	var sharpness_pct: float = (player.drill_sharpness / player.max_sharpness) * 100.0 if player.max_sharpness > 0 else 100.0
+
+	var lowest: float = min(health_pct, min(temp_pct, min(integrity_pct, sharpness_pct)))
+
+	if lowest <= 10.0:
+		# Pulse intensity scales with how low the worst metric is
+		var severity := 1.0 - (lowest / 10.0)  # 0 at 10%, 1 at 0%
+		var pulse := (sin(Time.get_ticks_msec() / 300.0) + 1.0) / 2.0
+		var target_intensity := lerpf(0.3, 0.7, pulse) * (0.5 + 0.5 * severity)
+		vignette_material.set_shader_parameter("intensity", target_intensity)
 	else:
-		health_bar.show()
-
-
-func hurt_effect(_damage, _hitpoints):
-	if hurt_effect_tween and hurt_effect_tween.is_running():
-		hurt_effect_tween.kill()
-	health_bar.modulate = Color.WHITE
-	hurt_effect_tween = create_tween()
-	hurt_effect_tween.set_loops(3)
-	hurt_effect_tween.tween_property(health_bar, "modulate", Color.TRANSPARENT, 0.1)
-	hurt_effect_tween.tween_property(health_bar, "modulate", Color.WHITE, 0.1)
+		vignette_material.set_shader_parameter("intensity", 0.0)
 
 
 ## Stub methods kept so other code doesn't crash if it still references them
@@ -116,6 +157,6 @@ func set_interaction_hint(text: String = "", pos: Vector2 = Vector2.ZERO):
 
 
 func update_subsystems():
-	hull_temp.value=player.hull_temp
-	hull_integrity.value=player.hull_integrity
-	drill_sharpness.value=player.drill_sharpness
+	hull_temp.gauge_value = player.hull_temp
+	hull_integrity.gauge_value = player.hull_integrity
+	drill_sharpness.gauge_value = player.drill_sharpness

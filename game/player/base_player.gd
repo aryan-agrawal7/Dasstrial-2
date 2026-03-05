@@ -343,6 +343,8 @@ func auto_mine(delta: float):
 
 
 func try_auto_mine_block(world: World, pos: Vector2i):
+	if drill_sharpness <= 0:
+		return
 	var block: Block = world.get_block(pos)
 	if block and block.can_be_mined():
 		drill_sharpness -= block.hardness * 0.25
