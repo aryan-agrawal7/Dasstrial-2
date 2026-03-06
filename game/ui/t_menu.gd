@@ -4,7 +4,8 @@ extends CanvasLayer
 var panel: PanelContainer
 var heal_btn: Button
 var vis_btn: Button
-var pod_btn: Button
+var water_btn: Button
+var oxygen_btn: Button
 var drill_btn: Button
 var gold_btn: Button
 var player: BasePlayer
@@ -79,15 +80,23 @@ func _init(p_player: BasePlayer):
 	_style_button(vis_btn, Color(0.6, 0.4, 0.2))
 	vbox.add_child(vis_btn)
 	
-	# 3. Resource Pods → Heal Player (restore HP)
-	pod_btn = Button.new()
-	pod_btn.text = "Heal Player (2 Resource Pods)"
-	pod_btn.custom_minimum_size = Vector2(0, 50)
-	pod_btn.pressed.connect(_on_pod_pressed)
-	_style_button(pod_btn, Color(0.2, 0.4, 0.8))
-	vbox.add_child(pod_btn)
+	# 3. Water Pods → Heal Player + restore hull temp
+	water_btn = Button.new()
+	water_btn.text = "Use Water Pods (2 Water Pods)"
+	water_btn.custom_minimum_size = Vector2(0, 50)
+	water_btn.pressed.connect(_on_water_pressed)
+	_style_button(water_btn, Color(0.2, 0.4, 0.8))
+	vbox.add_child(water_btn)
 	
-	# 4. Diamond → Sharpen Drill (increase drill efficiency)
+	# 4. Oxygen Pods → Heal Player (big HP restore)
+	oxygen_btn = Button.new()
+	oxygen_btn.text = "Use Oxygen Pods (2 Oxygen Pods)"
+	oxygen_btn.custom_minimum_size = Vector2(0, 50)
+	oxygen_btn.pressed.connect(_on_oxygen_pressed)
+	_style_button(oxygen_btn, Color(0.3, 0.7, 0.9))
+	vbox.add_child(oxygen_btn)
+	
+	# 5. Diamond → Sharpen Drill (increase drill efficiency)
 	drill_btn = Button.new()
 	drill_btn.text = "Sharpen Drill (2 Diamond Ore)"
 	drill_btn.custom_minimum_size = Vector2(0, 50)
@@ -145,22 +154,20 @@ func close():
 	panel.hide()
 	get_tree().paused = false
 
-func _get_total_pods() -> int:
-	return player.ore_counter.get_count_by_name("Water Pod") + player.ore_counter.get_count_by_name("Oxygen Pod")
-
 func _update_buttons():
 	heal_btn.disabled = player.ore_counter.get_count_by_name("iron_ore") < 5
 	vis_btn.disabled = player.ore_counter.get_count_by_name("coal_ore") < 5 or player.visibility_level >= 3
-	pod_btn.disabled = _get_total_pods() < 2
+	water_btn.disabled = player.ore_counter.get_count_by_name("Water Pod") < 2
+	oxygen_btn.disabled = player.ore_counter.get_count_by_name("Oxygen Pod") < 2
 	drill_btn.disabled = player.ore_counter.get_count_by_name("diamond_ore") < 2 or player.drill_sharpness >= player.max_sharpness
 	gold_btn.disabled = player.ore_counter.get_count_by_name("gold_ore") < 5
 
-## Iron: Repair ship hull (+25 integrity, +25 hull temp)
+## Iron: Repair ship hull (+25 integrity, +10 hull temp)
 func _on_heal_pressed():
 	if player.ore_counter.get_count_by_name("iron_ore") >= 5:
 		player.ore_counter.consume_raw("iron_ore", 5)
 		player.hull_integrity = min(player.max_integrity, player.hull_integrity + 25)
-		player.hull_temp = min(player.max_hull_temp, player.hull_temp + 25)
+		player.hull_temp = min(player.max_hull_temp, player.hull_temp + 10)
 		_update_buttons()
 
 ## Coal: Improve visibility by 1 level (reduce fog)
@@ -170,11 +177,19 @@ func _on_vis_pressed():
 		player.increase_visibility()
 		_update_buttons()
 
-## Resource Pods: Heal the player (+30 HP)
-func _on_pod_pressed():
-	if _get_total_pods() >= 2:
-		_consume_pods(2)
-		player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 30)
+## Water Pods: Heal player (+10 HP) and restore hull temp (+15)
+func _on_water_pressed():
+	if player.ore_counter.get_count_by_name("Water Pod") >= 2:
+		player.ore_counter.consume_raw("Water Pod", 2)
+		player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 10)
+		player.hull_temp = min(player.max_hull_temp, player.hull_temp + 15)
+		_update_buttons()
+
+## Oxygen Pods: Heal player (+40 HP)
+func _on_oxygen_pressed():
+	if player.ore_counter.get_count_by_name("Oxygen Pod") >= 2:
+		player.ore_counter.consume_raw("Oxygen Pod", 2)
+		player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 40)
 		_update_buttons()
 
 ## Diamond: Sharpen drill (+25 sharpness)
@@ -190,14 +205,3 @@ func _on_gold_pressed():
 		player.ore_counter.consume_raw("gold_ore", 5)
 		GameManager.ore_spawn_bonus = min(GameManager.ore_spawn_bonus + 0.03, 0.15)
 		_update_buttons()
-
-## Consume a number of pods, taking from whichever type is available
-func _consume_pods(count: int):
-	var remaining := count
-	var water := player.ore_counter.get_count_by_name("Water Pod")
-	var consume_water := mini(water, remaining)
-	if consume_water > 0:
-		player.ore_counter.consume_raw("Water Pod", consume_water)
-		remaining -= consume_water
-	if remaining > 0:
-		player.ore_counter.consume_raw("Oxygen Pod", remaining)

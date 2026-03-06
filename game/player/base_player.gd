@@ -200,10 +200,10 @@ func _physics_process(delta):
 ##              Formula: (0.5 + 3.0*f + 1.5*sin(f*π)) * 0.25 /s
 ##
 ##  TEMPERATURE → hull_temp drains quadratically (mild at surface, lethal at Core)
-##              Formula: 4.0 * f^2.2 /s
+##              Formula: 8.0 * f^2.2 /s
 ##
 ##  TEMPERATURE → health drains ALWAYS from heat, faster than the hull absorbs it
-##              Formula: 6.0 * f^2.2 /s  (1.5× the hull rate — body has less protection)
+##              Formula: 12.0 * f^2.2 /s  (1.5× the hull rate — body has less protection)
 ##
 ## Additional burst damage if a system depletes:
 ##   hull_temp = 0  → +6 HP/s (hull stops regulating heat)
@@ -222,11 +222,11 @@ func _tick_environmental_damage(delta: float):
 	hull_integrity = max(0.0, hull_integrity - integrity_drain)
 
 	## ── Temperature → hull temp (quadratic, heat accelerates at Core) ──────
-	var temp_drain: float = 4.0 * pow(f, 2.2) * delta
+	var temp_drain: float = 8.0 * pow(f, 2.2) * delta
 	hull_temp = max(0.0, hull_temp - temp_drain)
 
 	## ── Temperature → health (always active; health is more vulnerable than hull) ──
-	var hp_drain: float = 6.0 * pow(f, 2.2) * delta
+	var hp_drain: float = 12.0 * pow(f, 2.2) * delta
 	if hull_temp <= 0.0:
 		hp_drain += 6.0 * delta    # Hull no longer regulating heat
 	if hull_integrity <= 0.0:
