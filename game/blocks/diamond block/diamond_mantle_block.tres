@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="Block" format=3]
+
+
+[ext_resource type="Script" path="res://game/blocks/block.gd" id="2_62qvc"]
+[ext_resource type="Texture2D" path="res://game/blocks/diamond block/diamond_mantle.png" id="2_n76qi"]
+[ext_resource type="Resource" uid="uid://bj7ore4godot1" path="res://game/items/diamond ore/diamond_ore.tres" id="3_godot"]
+
+[resource]
+script = ExtResource("2_62qvc")
+texture = ExtResource("2_n76qi")
+drop = ExtResource("3_godot")
+hardness = 5.0
+has_collision = true
+tags = Array[Resource("res://game/tags/tag.gd")]([])
+particle_color = Color(0.337255, 0.34902, 0.968627, 1)
+material = 3
+mining_tool = 1
+other_tool_penalty = 4.0
+other_tool_produces_drops = false
+schedule_tick = false
+is_air = false
+is_fluid = false
+custom_collision_polygon = PackedVector2Array()
+name = "diamond"
