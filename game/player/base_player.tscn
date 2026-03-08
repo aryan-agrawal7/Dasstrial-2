@@ -1,6 +1,6 @@
-[gd_scene load_steps=22 format=3 uid="uid://d4mufsk5s6ksm"]
+[gd_scene format=3 uid="uid://d4mufsk5s6ksm"]
 
-[ext_resource type="Script" path="res://game/player/base_player.gd" id="1_lm5hc"]
+[ext_resource type="Script" uid="uid://bs5cefdgduip7" path="res://game/player/base_player.gd" id="1_lm5hc"]
 [ext_resource type="PackedScene" uid="uid://b7kuvqlnmagen" path="res://game/effects/block marker/block_marker.tscn" id="3_6qduw"]
 [ext_resource type="PackedScene" uid="uid://bhvbs1jyh6255" path="res://game/effects/block break animation/block_break_animation.tscn" id="4_qiuqw"]
 [ext_resource type="PackedScene" uid="uid://d1tn6k71bbasx" path="res://game/player/mine_raycast.tscn" id="6_2mh75"]
@@ -10,15 +10,15 @@
 [ext_resource type="PackedScene" uid="uid://vgl3mtr5d37f" path="res://game/components/debug component/debug_component.tscn" id="9_ypbfg"]
 [ext_resource type="PackedScene" uid="uid://d3r0rply8mfj" path="res://game/components/damage system/hurtbox.tscn" id="11_1dyk4"]
 [ext_resource type="PackedScene" uid="uid://ckqb12s3uef52" path="res://game/components/state machine/state_machine.tscn" id="12_7bify"]
-[ext_resource type="Script" path="res://game/player/state machine/player_state_machine.gd" id="14_7l24f"]
-[ext_resource type="Script" path="res://game/player/state machine/default_state.gd" id="14_urqh1"]
-[ext_resource type="Script" path="res://game/player/state machine/mining_state.gd" id="15_ips6r"]
-[ext_resource type="Script" path="res://game/player/state machine/item_using_state.gd" id="16_cekgf"]
-[ext_resource type="Script" path="res://game/player/state machine/item_charging_state.gd" id="17_b3ibu"]
-[ext_resource type="Script" path="res://game/player/state machine/dying_state.gd" id="18_xdhrf"]
-[ext_resource type="Script" path="res://game/player/state machine/building_state.gd" id="20_r6xgo"]
-[ext_resource type="Script" path="res://game/player/vehicle_logic.gd" id="21_n56ys"]
-[ext_resource type="Script" path="res://game/player/state machine/fishing_state.gd" id="22_mwsqf"]
+[ext_resource type="Script" uid="uid://ddmhvfb1hphcm" path="res://game/player/state machine/player_state_machine.gd" id="14_7l24f"]
+[ext_resource type="Script" uid="uid://xmgnp27drsh4" path="res://game/player/state machine/default_state.gd" id="14_urqh1"]
+[ext_resource type="Script" uid="uid://co6gai7qm0tid" path="res://game/player/state machine/mining_state.gd" id="15_ips6r"]
+[ext_resource type="Script" uid="uid://dnlfd735y3q00" path="res://game/player/state machine/item_using_state.gd" id="16_cekgf"]
+[ext_resource type="Script" uid="uid://c3l64ys3l60nj" path="res://game/player/state machine/item_charging_state.gd" id="17_b3ibu"]
+[ext_resource type="Script" uid="uid://4p7f6nsmg5mc" path="res://game/player/state machine/dying_state.gd" id="18_xdhrf"]
+[ext_resource type="Script" uid="uid://bjlwl1dy2hjrd" path="res://game/player/state machine/building_state.gd" id="20_r6xgo"]
+[ext_resource type="Script" uid="uid://iu37ih36762h" path="res://game/player/vehicle_logic.gd" id="21_n56ys"]
+[ext_resource type="Script" uid="uid://dyuvq5ep8ar10" path="res://game/player/state machine/fishing_state.gd" id="22_mwsqf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_cp3om"]
 size = Vector2(30, 60)
@@ -28,7 +28,7 @@ resource_local_to_scene = true
 radius = 15.0
 height = 75.0
 
-[node name="Base Player" type="CharacterBody2D"]
+[node name="Base Player" type="CharacterBody2D" unique_id=108499992]
 z_index = 10
 collision_layer = 2
 collision_mask = 645
@@ -37,77 +37,77 @@ block_marker_scene = ExtResource("3_6qduw")
 block_breaker_scene = ExtResource("4_qiuqw")
 mine_raycast_scene = ExtResource("6_2mh75")
 
-[node name="Body" type="Node2D" parent="."]
+[node name="Body" type="Node2D" parent="." unique_id=1585457947]
 
-[node name="Interaction Area" type="Area2D" parent="Body"]
+[node name="Interaction Area" type="Area2D" parent="Body" unique_id=797236433]
 collision_layer = 0
 collision_mask = 16
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/Interaction Area"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body/Interaction Area" unique_id=2139345070]
 position = Vector2(20, 0)
 shape = SubResource("RectangleShape2D_cp3om")
 debug_color = Color(0.584314, 0.905882, 0.172549, 0.419608)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1399688669]
 position = Vector2(0, -2)
 shape = SubResource("CapsuleShape2D_nwn3q")
 
-[node name="Low Tile Detector" parent="." instance=ExtResource("7_oj8sg")]
+[node name="Low Tile Detector" parent="." unique_id=670551421 instance=ExtResource("7_oj8sg")]
 position = Vector2(0, 32)
 
-[node name="Mid Tile Detector" parent="." instance=ExtResource("7_oj8sg")]
+[node name="Mid Tile Detector" parent="." unique_id=1075076193 instance=ExtResource("7_oj8sg")]
 position = Vector2(0, -8)
 
-[node name="Player UI" parent="." node_paths=PackedStringArray("health") instance=ExtResource("8_6jpol")]
+[node name="Player UI" parent="." unique_id=1442420886 node_paths=PackedStringArray("health") instance=ExtResource("8_6jpol")]
 health = NodePath("../Health Component")
 
-[node name="Health Component" parent="." instance=ExtResource("8_ku2ig")]
+[node name="Health Component" parent="." unique_id=702441963 instance=ExtResource("8_ku2ig")]
 regeneration_per_sec = 5.0
 
-[node name="Debug Component" parent="." instance=ExtResource("9_ypbfg")]
+[node name="Debug Component" parent="." unique_id=1656252295 instance=ExtResource("9_ypbfg")]
 max_detail_level = 1
 prefix = "Player"
 
-[node name="Hurt Box" parent="." node_paths=PackedStringArray("health_component") instance=ExtResource("11_1dyk4")]
+[node name="Hurt Box" parent="." unique_id=272455008 node_paths=PackedStringArray("health_component") instance=ExtResource("11_1dyk4")]
 health_component = NodePath("../Health Component")
 
-[node name="Vehicle" type="Node" parent="."]
+[node name="Vehicle" type="Node" parent="." unique_id=2091453102]
 script = ExtResource("21_n56ys")
 
-[node name="State Machine" parent="." node_paths=PackedStringArray("current_state") instance=ExtResource("12_7bify")]
+[node name="State Machine" parent="." unique_id=487580565 node_paths=PackedStringArray("current_state") instance=ExtResource("12_7bify")]
 script = ExtResource("14_7l24f")
 current_state = NodePath("Default")
 debug = true
 
-[node name="Default" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Default" type="Node" parent="State Machine" unique_id=482815186 node_paths=PackedStringArray("player")]
 script = ExtResource("14_urqh1")
 player = NodePath("../..")
 
-[node name="Mining" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Mining" type="Node" parent="State Machine" unique_id=372133816 node_paths=PackedStringArray("player")]
 script = ExtResource("15_ips6r")
 player = NodePath("../..")
 
-[node name="Sound Interval" type="Timer" parent="State Machine/Mining"]
+[node name="Sound Interval" type="Timer" parent="State Machine/Mining" unique_id=1385853588]
 wait_time = 0.7
 one_shot = true
 
-[node name="Item Using" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Item Using" type="Node" parent="State Machine" unique_id=2020536913 node_paths=PackedStringArray("player")]
 script = ExtResource("16_cekgf")
 player = NodePath("../..")
 
-[node name="Item Charging" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Item Charging" type="Node" parent="State Machine" unique_id=1846208093 node_paths=PackedStringArray("player")]
 script = ExtResource("17_b3ibu")
 player = NodePath("../..")
 
-[node name="Dying" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Dying" type="Node" parent="State Machine" unique_id=244583276 node_paths=PackedStringArray("player")]
 script = ExtResource("18_xdhrf")
 player = NodePath("../..")
 
-[node name="Building" type="Node" parent="State Machine" node_paths=PackedStringArray("player")]
+[node name="Building" type="Node" parent="State Machine" unique_id=1633538369 node_paths=PackedStringArray("player")]
 script = ExtResource("20_r6xgo")
 player = NodePath("../..")
 
-[node name="Fishing" type="Node" parent="State Machine"]
+[node name="Fishing" type="Node" parent="State Machine" unique_id=1260609703]
 script = ExtResource("22_mwsqf")
 
 [connection signal="exit_vehicle" from="Vehicle" to="State Machine" method="_on_exit_vehicle"]
