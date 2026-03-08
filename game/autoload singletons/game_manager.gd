@@ -63,9 +63,15 @@ func run_deferred(scene: PackedScene):
 
 
 func game_over(win: bool):
+	# Safely pause the world to stop all background chunk generator threads from crashing
 	get_tree().paused= true
 	game_over_label.text= "You won!!" if win else "You lost :("
 	game_over_container.show()
+	
+	# Auto-exit cleanly after showing the screen for 2 seconds.
+	# We pass `true, false, true` to ensure the timer counts down even while the game is paused.
+	await get_tree().create_timer(2.0, true, false, true).timeout
+	load_main_menu()
 
 
 func _on_try_again_button_pressed():

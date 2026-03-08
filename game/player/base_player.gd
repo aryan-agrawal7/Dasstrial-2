@@ -5,6 +5,7 @@ signal break_block(block: Block)
 
 
 const FLY_SPEED_FACTOR= 4.0
+const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
 
 @export_category("Movement")
 @export var speed: float = 200.0
@@ -122,6 +123,7 @@ func _physics_process(delta):
 		if auto_mine_enabled:
 			auto_mine(delta)
 
+	global_position.x = clamp(global_position.x, -800, 800)
 	tick_effects()
 
 
@@ -156,6 +158,11 @@ func sidescroll_movement(delta):
 			on_movement_walk()
 		else:
 			on_movement_stop()
+			
+		var floor_block_1 = get_world().get_block(get_tile_pos() + Vector2i(0, 1))
+		var floor_block_2 = get_world().get_block(get_tile_pos() + Vector2i(0, 2))
+		if (floor_block_1 and floor_block_1 is FinishBlockScript) or (floor_block_2 and floor_block_2 is FinishBlockScript):
+			Global.game.game_over(true)
 
 	move_and_slide()
 

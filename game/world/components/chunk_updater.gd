@@ -53,6 +53,7 @@ func run(non_blocking: bool= true):
 				world.create_chunk(chunk_coords, world.get_chunk_storage(chunk_coords))
 				if non_blocking:
 					for i in DELAY_FRAMES:
+						if not is_inside_tree(): break
 						await get_tree().process_frame
 	
 	DebugHud.send("Total chunks", len(world.get_chunks()))
