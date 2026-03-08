@@ -43,6 +43,8 @@ var ORE_COAL: Item = preload("res://game/items/coal ore/coal_ore.tres")
 var ORE_IRON: Item = preload("res://game/items/iron ore/iron_ore.tres")
 var ORE_GOLD: Item = preload("res://game/items/gold ore/gold_ore.tres")
 var ORE_GODOT: Item = preload("res://game/items/godot ore/godot_ore.tres")
+var POD_WATER: Item = preload("res://game/items/water_pod/water_pod.tres")
+var POD_OXYGEN: Item = preload("res://game/items/oxygen_pod/oxygen_pod.tres")
 
 @onready var ui: UI = $"Player UI"
 @onready var low_tile_detector: TileDetector = $"Low Tile Detector"
@@ -53,7 +55,14 @@ var ORE_GODOT: Item = preload("res://game/items/godot ore/godot_ore.tres")
 @onready var vehicle_logic: PlayerVehicleLogic = $Vehicle
 
 @onready var state_machine: PlayerStateMachine = $"State Machine"
+@export_group("Sub-Systems")
+@export var hull_temp: float = 100.0
+@export var hull_integrity: float = 100.0
+@export var drill_sharpness: float = 100.0
 
+var max_hull_temp: float = 100.0
+var max_integrity: float = 100.0
+var max_sharpness: float = 100.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -97,6 +106,8 @@ func _ready():
 	ore_counter.register_ore(ORE_IRON)
 	ore_counter.register_ore(ORE_GOLD)
 	ore_counter.register_ore(ORE_GODOT)
+	ore_counter.register_ore(POD_WATER)
+	ore_counter.register_ore(POD_OXYGEN)
 
 	init_block_indicators()
 
@@ -232,6 +243,8 @@ func auto_mine(delta: float):
 func try_auto_mine_block(world: World, pos: Vector2i):
 	var block: Block = world.get_block(pos)
 	if block and block.can_be_mined():
+		drill_sharpness -= block.hardness*0.25
+		drill_sharpness = max(drill_sharpness, 0	)
 		# If the block drops an ore item, add it directly to the counter
 		if block.drop:
 			ore_counter.add_ore(block.drop)
@@ -411,3 +424,18 @@ func on_hand_action_finished():
 
 func play_hand_item_sound(_target_material: MaterialSoundLibrary.Type):
 	pass
+	
+func _unhandled_input(event: InputEvent):
+	if freeze: return
+	
+	if event.is_action_pressed("use_water_pod"):
+		ore_counter.consume_item("Water Pod", self)
+		
+	elif event.is_action_pressed("use_oxygen_pod"):
+		ore_counter.consume_item("Oxygen Pod", self)
+		
+	elif event.is_action_pressed("sharpen_drill"):
+		ore_counter.consume_item("iron_ore", self)
+		
+	elif event.is_action_pressed("use_ore"):
+		ore_counter.consume_item("gold_ore", self)

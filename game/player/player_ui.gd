@@ -6,10 +6,15 @@ extends CanvasLayer
 
 @export var health: HealthComponent
 
+
 @onready var player: BasePlayer = get_parent()
-@onready var health_bar: ProgressBar = %"ProgressBar Health"
+@onready var health_bar: ProgressBar = %"Player Health"
+@onready var hull_temp: ProgressBar = %"Hull Temperature"
+@onready var hull_integrity: ProgressBar = %"Hull Integrity"
+@onready var drill_sharpness: ProgressBar = %"Drill Sharpness"
 @onready var ore_container: VBoxContainer = %"Ore Container"
 @onready var interaction_hint: Label = %"Interaction Hint"
+
 
 ## References to ore count labels, keyed by ore item name
 var ore_labels: Dictionary = {}
@@ -32,6 +37,7 @@ func _ready():
 
 func _process(_delta):
 	update_health()
+	update_subsystems()
 
 
 func _connect_ore_counter():
@@ -74,7 +80,7 @@ func _update_ore_display():
 func update_health():
 	var ratio: float = health.hitpoints / health.max_hitpoints
 	if is_equal_approx(ratio, 1.0):
-		health_bar.hide()
+		health_bar.show()
 	else:
 		health_bar.value = ratio * 100
 		health_bar.show()
@@ -106,3 +112,10 @@ func set_interaction_hint(text: String = "", pos: Vector2 = Vector2.ZERO):
 		await get_tree().process_frame
 		if not is_inside_tree(): return
 		interaction_hint.position = get_viewport().canvas_transform * pos - Vector2(interaction_hint.size.x / 2, 0)
+
+
+func update_subsystems():
+	hull_temp.value=player.hull_temp
+	hull_integrity.value=player.hull_integrity
+	drill_sharpness.value=player.drill_sharpness
+	health_bar.value=player.health.hitpoints
