@@ -1,0 +1,9 @@
+# Godot 4+ specific ignores
+.godot/
+
+# dynamically generated tile set
+resources/tile_set.tres
+
+local/**
+!.gitkeep
+

@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://ctuo5roogjlc8"]
+
+[ext_resource type="Script" path="res://game/audio/positional_sound_player.gd" id="1_0jw2h"]
+
+[node name="Positional Sound Player" type="Node"]
+script = ExtResource("1_0jw2h")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer2D" parent="."]
+max_polyphony = 5

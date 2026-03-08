@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://b47fbnpmt50ao"]
+
+[ext_resource type="Script" path="res://game/audio/sound_player.gd" id="1_ubgcs"]
+
+[node name="Sound Player" type="Node"]
+script = ExtResource("1_ubgcs")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer" parent="."]
+max_polyphony = 5

@@ -1,0 +1,101 @@
+##################
+# latest        #
+##################
+
+- jump buffer and coyote timer
+- rocket
+- fishing rod
+- fish
+- clouds
+- render background
+- admin panel
+- water source block
+- improved mining and building algorithm
+- boat
+- overworld terrain generation with height curve
+- grass & dirt block
+- gold block & ore
+- game start options in /local
+- PlayerEffect
+
+##################
+# v0.4          #
+##################
+
+- sandbox game mode
+- user config
+- main menu
+- iron ingot challenge
+- base scenario
+- level editor
+- stone slab (item), stone ramp and smooth stone block
+- building
+- crafting
+- inventory UI
+- player death and respawn
+- fall damage
+- player health bar
+- material sound matrix plugin
+- El Classico character
+- base player scene
+- autoload scenes, no more hardcoded paths
+- directories restructured
+
+##################
+# v0.3          #
+##################
+
+- mob spawner
+- despawn items with chunks
+- save changed chunks to memory
+- block scheduling
+- water
+- grenades
+- game settings loadout
+- player loadout
+- bat neutral mob
+- state machine
+- specific mining tool type per block, speed penalty and conditional drops
+- dummy enemy
+- sword
+- melee attack animations
+- damage system
+- godot block 
+- fireworks effect
+- toggle free camera ( K )
+- Debug Hud
+- auto player spawning
+- game settings
+- cheats
+- terrain generator
+- world chunks
+
+##################
+# v0.2           #
+##################
+
+- custom interaction hints
+- mouse wheel support
+- test game scene added
+- create tileset in editor via tool script
+- follow camera
+- coal, iron blocks/ores/ingot
+- furnace + recipes
+- base block entity
+- debug component
+- interaction target component
+- pull items towards player
+- block break particle effect
+- custom particle system
+- inventory (= hotbar)
+- drop hand item ( X )
+- tags
+- pick up WorldItems
+- modular hand items
+- WASD controls
+
+##################
+# v0.1 (classic) #
+##################
+
+- basic movement and mining mechanics
