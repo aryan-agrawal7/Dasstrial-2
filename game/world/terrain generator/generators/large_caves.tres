@@ -22,7 +22,7 @@ noise_threshold = 0.0
 [sub_resource type="Resource" id="Resource_62246"]
 script = ExtResource("3_0sel7")
 min_height = -100
-max_height = 1024
+max_height = 2000
 distribution = SubResource("Resource_qdcf6")
 is_cave = false
 ignore_height = false
@@ -39,7 +39,7 @@ noise_threshold = 0.35
 [sub_resource type="Resource" id="Resource_ores_inst"]
 script = ExtResource("3_0sel7")
 min_height = 0
-max_height = 1024
+max_height = 2000
 distribution = SubResource("Resource_ores_dist")
 is_cave = false
 ignore_height = false
@@ -62,7 +62,7 @@ noise_threshold = 0.2
 [sub_resource type="Resource" id="Resource_wdpor"]
 script = ExtResource("3_0sel7")
 min_height = 0
-max_height = 1024
+max_height = 2000
 distribution = SubResource("Resource_kx2jn")
 is_cave = true
 ignore_height = false

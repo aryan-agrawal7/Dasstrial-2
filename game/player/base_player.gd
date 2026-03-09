@@ -93,7 +93,7 @@ var t_menu: TMenu
 var fow_light: PointLight2D
 var visibility_level: int = 3 # starts with full visibility 3
 var visibility_timer: float = 0.0
-var visibility_shrink_interval: float = 12.0 # Shrinks every 12s for fast-paced gameplay
+var visibility_shrink_interval: float = 24.0 # Shrinks every 84s to scale with 7x world depth
 
 
 func _ready():
@@ -215,7 +215,7 @@ func _tick_environmental_damage(delta: float):
 	if not health or not health.is_inside_tree():
 		return
 
-	var f: float = clamp(float(tile_y) / 150.0, 0.0, 1.0)
+	var f: float = clamp(float(tile_y) / 1050.0, 0.0, 1.0)
 
 	## ── Pressure → hull integrity (linear + sinusoidal boundary spikes) ────
 	var integrity_drain: float = (0.5 + 3.0 * f + 1.5 * sin(f * PI)) * 0.25 * delta

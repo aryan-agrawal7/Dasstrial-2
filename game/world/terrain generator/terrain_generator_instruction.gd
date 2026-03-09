@@ -2,7 +2,7 @@ class_name TerrainGeneratorInstruction
 extends Resource
 
 @export var min_height: int= 0
-@export var max_height: int= 1024
+@export var max_height: int= 2000
 @export var distribution: TerrainBlockDistribution
 @export var is_cave: bool= false
 @export var ignore_height: bool= false
