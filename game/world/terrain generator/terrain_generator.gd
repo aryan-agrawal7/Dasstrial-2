@@ -23,6 +23,24 @@ var oxygen_pod_block: Block = preload("res://game/blocks/oxygen_pod_block/oxygen
 var _water_noise: FastNoiseLite
 var _oxygen_noise: FastNoiseLite
 
+## Depth-specific block variants
+var mantle_blocks: Dictionary = {
+	"stone": preload("res://game/blocks/stone block/stone_mantle_block.tres"),
+	"coal": preload("res://game/blocks/coal block/coal_mantle_block.tres"),
+	"iron": preload("res://game/blocks/iron block/iron_mantle_block.tres"),
+	"gold": preload("res://game/blocks/gold block/gold_mantle_block.tres"),
+	"diamond": preload("res://game/blocks/diamond block/diamond_mantle_block.tres")
+}
+
+var core_blocks: Dictionary = {
+	"stone": preload("res://game/blocks/stone block/stone_core_block.tres"),
+	"coal": preload("res://game/blocks/coal block/coal_core_block.tres"),
+	"iron": preload("res://game/blocks/iron block/iron_core_block.tres"),
+	"gold": preload("res://game/blocks/gold block/gold_core_block.tres"),
+	"diamond": preload("res://game/blocks/diamond block/diamond_core_block.tres")
+}
+
+
 
 func initialize():
 	for instruction in instructions:
@@ -72,6 +90,15 @@ func get_block_id(pos: Vector2i)-> int:
 	if pod:
 		block = pod
 
+	## Swap block visuals based on depth
+	var section: String = get_section_name(pos.y)
+	if section == "Mantle" or section == "Mantle-2":
+		if mantle_blocks.has(block.name):
+			block = mantle_blocks[block.name]
+	elif section == "Core":
+		if core_blocks.has(block.name):
+			block = core_blocks[block.name]
+
 	return DataManager.get_block_id(block)
 
 
@@ -84,12 +111,12 @@ func _get_pod_block(pos: Vector2i) -> Block:
 
 	# Water pods — appear in both mantle bands
 	if (y >= 25 and y < 65) or (y >= 85 and y < 125):
-		if _water_noise.get_noise_2d(pos.x, pos.y) > (0.50 - bonus):
+		if _water_noise.get_noise_2d(pos.x, pos.y) > (0.65 - bonus):
 			return water_pod_block
 
 	# Oxygen pods — concentrated in the core and transition zones
 	if y >= 50 and y < 115:
-		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > (0.55 - bonus):
+		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > (0.70 - bonus):
 			return oxygen_pod_block
 
 	return null
@@ -120,4 +147,3 @@ func get_section_name(y: int) -> String:
 		return "Mantle-2"
 	else:
 		return "Crust-2"
-
