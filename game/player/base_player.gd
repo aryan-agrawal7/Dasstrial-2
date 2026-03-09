@@ -194,19 +194,14 @@ func _physics_process(delta):
 	_tick_environmental_damage(delta)
 
 
-## Passive environmental damage — three independent systems:
+## Passive environmental damage — peaks at Core center (y≈525), decreases
+##  both toward surface and toward the finish line.
 ##
-##  TEMPERATURE → hull_temp: sin(f*PI) bell curve
-##              Peaks at Core center (f=0.5, y≈525), zero at surface and finish
-##              Multiplier: 3.0  →  peak drain = 3.0/s
+##  f = core proximity: 1.0 at core center, 0.0 at surface/finish
 ##
-##  TEMPERATURE → health: 1.5× hull rate always active
-##              Body is more vulnerable to heat than hull plating
-##              Multiplier: 4.5  →  peak drain = 4.5/s
-##
-##  PRESSURE → hull_integrity: purely linear with depth
-##              Pressure is proportional to depth, no sinusoidal spikes
-##              Formula: (0.3 + 1.5*f) * 0.2 /s
+##  TEMPERATURE → hull_temp: 8.0 * f^2.2 /s (peaks at core)
+##  TEMPERATURE → health:   12.0 * f^2.2 /s (1.5× hull rate)
+##  PRESSURE → hull_integrity: (0.5 + 3.0*f + 1.5*sin(f*π)) * 0.25 /s
 ##
 ## Burst damage when hulls deplete:
 ##   hull_temp = 0  → +5 HP/s
@@ -218,24 +213,28 @@ func _tick_environmental_damage(delta: float):
 	if not health or not health.is_inside_tree():
 		return
 
-	var f: float = clamp(float(tile_y) / 1050.0, 0.0, 1.0)
-	var temp_factor: float = sin(f * PI)   # bell curve: 0 → 1 (Core peak) → 0
+	# f = proximity to core center (y=525). Peaks at 1.0, falls to 0.0 at edges.
+	var core_center: float = 525.0
+	var max_dist: float = 525.0
+	var dist: float = abs(float(tile_y) - core_center)
+	var f: float = clamp(1.0 - dist / max_dist, 0.0, 1.0)
 
-	## ── Temperature → hull temp (bell curve, peaks at Core center) ──────────
-	var temp_drain: float = 3.0 * temp_factor * delta
+	## ── Temperature → hull temp (quadratic, peaks at Core) ──────────────────
+	var temp_drain: float = 8.0 * pow(f, 2.2) * delta
 	hull_temp = max(0.0, hull_temp - temp_drain)
 
-	## ── Pressure → hull integrity (linear with depth) ────────────────────────
-	var integrity_drain: float = (0.3 + 1.5 * f) * 0.2 * delta
+	## ── Pressure → hull integrity (peaks at Core, drops away from it) ───────
+	var integrity_drain: float = (0.5 + 3.0 * f + 1.5 * sin(f * PI)) * 0.25 * delta
 	hull_integrity = max(0.0, hull_integrity - integrity_drain)
 
-	## ── Temperature → health (1.5× hull rate, always active) ────────────────
-	var hp_drain: float = 4.5 * temp_factor * delta
+	## ── Health only drains when hull systems are breached ────────────────────
+	var hp_drain: float = 0.0
 	if hull_temp <= 0.0:
 		hp_drain += 5.0 * delta    # Hull no longer regulating heat
 	if hull_integrity <= 0.0:
 		hp_drain += 7.0 * delta    # Pressure breach
-	health.receive_damage(Damage.new(hp_drain, Damage.Type.ENVIRONMENT))
+	if hp_drain > 0.0:
+		health.receive_damage(Damage.new(hp_drain, Damage.Type.ENVIRONMENT))
 
 
 
