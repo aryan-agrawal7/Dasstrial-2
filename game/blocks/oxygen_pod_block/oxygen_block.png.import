@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c7m7avvkcyyu2"
-path="res://.godot/imported/oxygen_block.png-ec295a6ef1c0dff4b0140d9de5a2fea5.ctex"
+path="res://.godot/imported/oxygen_block.png-7e72b55ad3c0bafe59c97d3882b89817.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://game/blocks/air block/oxygen_block.png"
-dest_files=["res://.godot/imported/oxygen_block.png-ec295a6ef1c0dff4b0140d9de5a2fea5.ctex"]
+source_file="res://game/blocks/oxygen_pod_block/oxygen_block.png"
+dest_files=["res://.godot/imported/oxygen_block.png-7e72b55ad3c0bafe59c97d3882b89817.ctex"]
 
 [params]
 

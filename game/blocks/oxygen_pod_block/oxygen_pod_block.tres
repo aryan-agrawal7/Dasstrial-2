@@ -1,16 +1,14 @@
-[gd_resource type="Resource" script_class="Block" load_steps=4 format=3 uid="uid://c4lx9w0o3jqr8f"]
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://yri6lpsfowbb"]
 
-[ext_resource type="Script" path="res://game/blocks/block.gd" id="1_blk"]
+[ext_resource type="Script" uid="uid://dltuk121b08oo" path="res://game/blocks/block.gd" id="1_blk"]
 [ext_resource type="Resource" uid="uid://cidftgkq4ew02" path="res://game/items/oxygen_pod/oxygen_pod.tres" id="2_drop"]
-[ext_resource type="Texture2D" uid="uid://fqjuupebpt0x" path="res://game/blocks/iron block/iron.png" id="3_tex"]
+[ext_resource type="Script" uid="uid://d4mod5cyhdbbi" path="res://game/tags/tag.gd" id="3_syq74"]
+[ext_resource type="Texture2D" uid="uid://cj1nb3ibx7llb" path="res://game/blocks/water blocks/water_quarter.png" id="4_syq74"]
 
 [resource]
 script = ExtResource("1_blk")
-name = "oxygen_pod_block"
-texture = ExtResource("3_tex")
+texture = ExtResource("4_syq74")
 drop = ExtResource("2_drop")
 hardness = 1.8
-has_collision = true
 particle_color = Color(0.72, 0.85, 0.95, 1)
-is_air = false
-is_fluid = false
+name = "oxygen_pod_block"

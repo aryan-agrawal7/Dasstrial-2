@@ -63,15 +63,25 @@ layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
+[node name="Player Health Label" type="Label" parent="Health/VBoxContainer"]
+layout_mode = 2
+text = "Player Health"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 12
+
 [node name="Player Health" type="ProgressBar" parent="Health/VBoxContainer" unique_id=781862528]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 size_flags_horizontal = 4
 mouse_filter = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_vepwu")
-theme_override_styles/fill = SubResource("StyleBoxFlat_noruo")
 show_percentage = false
+
+[node name="Hull Integrity Label" type="Label" parent="Health/VBoxContainer"]
+layout_mode = 2
+text = "Hull Integrity"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 12
 
 [node name="Hull Integrity" type="ProgressBar" parent="Health/VBoxContainer" unique_id=1923616465]
 unique_name_in_owner = true
@@ -80,11 +90,23 @@ layout_mode = 2
 step = 0.1
 show_percentage = false
 
+[node name="Drill Sharpness Label" type="Label" parent="Health/VBoxContainer"]
+layout_mode = 2
+text = "Drill Sharpness"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 12
+
 [node name="Drill Sharpness" type="ProgressBar" parent="Health/VBoxContainer" unique_id=768893488]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 show_percentage = false
+
+[node name="Hull Temperature Label" type="Label" parent="Health/VBoxContainer"]
+layout_mode = 2
+text = "Hull Temperature"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 12
 
 [node name="Hull Temperature" type="ProgressBar" parent="Health/VBoxContainer" unique_id=800596052]
 unique_name_in_owner = true
