@@ -62,7 +62,6 @@ position = Vector2(0, -8)
 health = NodePath("../Health Component")
 
 [node name="Health Component" parent="." unique_id=702441963 instance=ExtResource("8_ku2ig")]
-regeneration_per_sec = 5.0
 
 [node name="Debug Component" parent="." unique_id=1656252295 instance=ExtResource("9_ypbfg")]
 max_detail_level = 1
