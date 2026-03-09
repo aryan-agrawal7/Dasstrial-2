@@ -7,7 +7,6 @@
 [ext_resource type="Script" uid="uid://d2cdr0koui5hb" path="res://game/world/components/chunk_updater.gd" id="5_qqsjj"]
 [ext_resource type="Resource" uid="uid://di6fjtt37v77v" path="res://game/effects/particles/explosion_particles.tres" id="5_snubo"]
 [ext_resource type="PackedScene" uid="uid://vgl3mtr5d37f" path="res://game/components/debug component/debug_component.tscn" id="7_4bafo"]
-[ext_resource type="Script" uid="uid://5h73olaika08" path="res://game/world/components/mob spawner/mob_spawner.gd" id="7_otmna"]
 [ext_resource type="Script" uid="uid://bppavdiva7itw" path="res://game/world/environment.gd" id="9_xooip"]
 [ext_resource type="PackedScene" uid="uid://dyropcrf6ibvl" path="res://game/world/environment/cloud.tscn" id="10_ljkx7"]
 [ext_resource type="Script" uid="uid://bic2f862calvs" path="res://game/world/backgound.gd" id="11_q7yms"]
@@ -34,16 +33,7 @@ script = ExtResource("5_qqsjj")
 
 [node name="Update Timer" type="Timer" parent="Chunk Updater" unique_id=1630416049]
 
-[node name="Mob Spawner" type="Node" parent="." unique_id=1866996210]
-script = ExtResource("7_otmna")
-min_player_distance = 30
-
-[node name="Timer" type="Timer" parent="Mob Spawner" unique_id=707278978]
-wait_time = 0.1
-
 [node name="Chunks" type="Node2D" parent="." unique_id=388388101]
-
-[node name="Mobs" type="Node2D" parent="." unique_id=1800022558]
 
 [node name="Block Entities" type="Node2D" parent="." unique_id=122201331]
 
@@ -83,4 +73,3 @@ texture = ExtResource("12_2tmry")
 
 [connection signal="initial_run_completed" from="Chunk Updater" to="." method="_on_chunk_updater_initial_run_completed"]
 [connection signal="timeout" from="Chunk Updater/Update Timer" to="Chunk Updater" method="_on_update_timer_timeout"]
-[connection signal="timeout" from="Mob Spawner/Timer" to="Mob Spawner" method="_on_timer_timeout"]

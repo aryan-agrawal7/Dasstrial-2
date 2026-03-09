@@ -248,7 +248,6 @@ func cleanup():
 	for item in items:
 		if is_instance_valid(item):
 			item.queue_free()
-	world.remove_mobs_in_rect(get_rect())
 	items.clear()
 
 

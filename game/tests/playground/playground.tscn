@@ -32,7 +32,6 @@ cheats = SubResource("Resource_g2rh2")
 player_scene = ExtResource("5_0set7")
 
 [node name="World" parent="." instance=ExtResource("6_dkwx3")]
-enable_mob_spawner = false
 generator = ExtResource("8_4yhic")
 disable_environment = true
 disable_background = true

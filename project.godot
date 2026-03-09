@@ -196,8 +196,6 @@ sharpen_drill={
 
 2d_physics/layer_1="Terrain"
 2d_physics/layer_2="Player"
-2d_physics/layer_3="Mob"
-2d_physics/layer_4="No Collision Mob"
 2d_physics/layer_5="Interaction"
 2d_physics/layer_6="Projectile"
 2d_physics/layer_7="Damage"

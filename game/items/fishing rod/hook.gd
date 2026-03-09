@@ -12,7 +12,7 @@ extends CharacterBody2D
 
 
 var can_hook: bool= true
-var fish: Fish
+var fish: Node= null
 
 
 
@@ -44,31 +44,16 @@ func _physics_process(delta):
 	move_and_slide()
 
 
-func _on_fish_interest_area_body_entered(body):
-	assert(body is BaseMob)
-	if body is Fish:
-		body.hook_interest(self)
+func _on_fish_interest_area_body_entered(_body):
+	pass
 
 
-func _on_fish_hook_area_body_entered(body):
-	if not can_hook: return
-	assert(body is BaseMob)
-	if body is Fish:
-		fish= body
-		fish.hook(self)
-		can_hook= false
+func _on_fish_hook_area_body_entered(_body):
+	pass
 
 
 func reel_in():
 	fish_hook_area.set_deferred("monitoring", false)
 	fish_interest_area.set_deferred("monitoring", false)
-	if not fish: return
-	var store_position: Vector2= global_position
-	await get_tree().create_timer(hook_time).timeout
-	if not fish: return
-	var world_item: WorldItem= fish.world.spawn_item(fish.item, global_position)
-	world_item.velocity= global_position - store_position
-	world_item.x_damping= 0.01
-	fish.queue_free()
 	fish= null
 	can_hook= true
