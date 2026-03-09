@@ -1,24 +1,7 @@
 [gd_scene format=3 uid="uid://b4uyq2o7u54dp"]
 
 [ext_resource type="Script" uid="uid://clhbfp352g74s" path="res://game/player/player_ui.gd" id="1_cefh8"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vepwu"]
-bg_color = Color(0.6, 0.6, 0.6, 0.12549)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-expand_margin_left = 2.0
-expand_margin_top = 2.0
-expand_margin_right = 2.0
-expand_margin_bottom = 2.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_noruo"]
-bg_color = Color(0.843137, 0.101961, 0.0156863, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+[ext_resource type="Script" path="res://game/player/gauge_dial.gd" id="gauge_dial"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orepanel"]
 content_margin_left = 10.0
@@ -50,69 +33,58 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 
-[node name="Health" type="MarginContainer" parent="." unique_id=532300581]
+[node name="Gauges" type="MarginContainer" parent="."]
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
+theme_override_constants/margin_top = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Health" unique_id=2028978734]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-
-[node name="Player Health Label" type="Label" parent="Health/VBoxContainer"]
-layout_mode = 2
-text = "Player Health"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 12
-
-[node name="Player Health" type="ProgressBar" parent="Health/VBoxContainer" unique_id=781862528]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 20)
+[node name="HBoxContainer" type="HBoxContainer" parent="Gauges"]
 layout_mode = 2
 size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="Player Health" type="Control" parent="Gauges/HBoxContainer" unique_id=781862528]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 140)
+layout_mode = 2
 mouse_filter = 2
-show_percentage = false
+script = ExtResource("gauge_dial")
+gauge_label = "HEALTH"
+gauge_color = Color(0.2, 0.8, 0.4, 1)
+danger_threshold = 25.0
 
-[node name="Hull Integrity Label" type="Label" parent="Health/VBoxContainer"]
-layout_mode = 2
-text = "Hull Integrity"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 12
-
-[node name="Hull Integrity" type="ProgressBar" parent="Health/VBoxContainer" unique_id=1923616465]
+[node name="Hull Integrity" type="Control" parent="Gauges/HBoxContainer" unique_id=1923616465]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(140, 140)
 layout_mode = 2
-step = 0.1
-show_percentage = false
+mouse_filter = 2
+script = ExtResource("gauge_dial")
+gauge_label = "INTEGRITY"
+gauge_color = Color(0.3, 0.5, 0.9, 1)
+danger_threshold = 20.0
 
-[node name="Drill Sharpness Label" type="Label" parent="Health/VBoxContainer"]
-layout_mode = 2
-text = "Drill Sharpness"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 12
-
-[node name="Drill Sharpness" type="ProgressBar" parent="Health/VBoxContainer" unique_id=768893488]
+[node name="Drill Sharpness" type="Control" parent="Gauges/HBoxContainer" unique_id=768893488]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(140, 140)
 layout_mode = 2
-show_percentage = false
+mouse_filter = 2
+script = ExtResource("gauge_dial")
+gauge_label = "DRILL"
+gauge_color = Color(0.9, 0.7, 0.2, 1)
+danger_threshold = 15.0
 
-[node name="Hull Temperature Label" type="Label" parent="Health/VBoxContainer"]
-layout_mode = 2
-text = "Hull Temperature"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 12
-
-[node name="Hull Temperature" type="ProgressBar" parent="Health/VBoxContainer" unique_id=800596052]
+[node name="Hull Temperature" type="Control" parent="Gauges/HBoxContainer" unique_id=800596052]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(200, 20)
+custom_minimum_size = Vector2(140, 140)
 layout_mode = 2
-show_percentage = false
+mouse_filter = 2
+script = ExtResource("gauge_dial")
+gauge_label = "HULL TEMP"
+gauge_color = Color(0.85, 0.35, 0.15, 1)
+danger_threshold = 25.0
 
 [node name="Ore Panel" type="MarginContainer" parent="." unique_id=1449697365]
 anchors_preset = 1
