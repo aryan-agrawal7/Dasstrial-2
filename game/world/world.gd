@@ -19,7 +19,6 @@ const TILE_SIZE= 32
 @export_category("Static Resources")
 @export var explosion_particles: ParticleSettings
 @export var world_item_scene: PackedScene
-var checkpoint_scene: PackedScene = preload("res://game/world/components/checkpoint_marker.tscn")
 @export var world_chunk_scene: PackedScene
 
 
@@ -72,8 +71,14 @@ func start():
 
 
 func _spawn_checkpoints():
+	# Use load() here (not preload) to avoid a circular dependency:
+	# world.gd (class World) <-> checkpoint_marker.gd (uses World.TILE_SIZE)
+	var scene: PackedScene = load("res://game/world/components/checkpoint_marker.tscn")
+	if not scene:
+		push_error("CheckpointMarker scene not found")
+		return
 	for boundary_y in SectionManager.section_boundaries:
-		var checkpoint = checkpoint_scene.instantiate()
+		var checkpoint = scene.instantiate()
 		add_child(checkpoint)
 		checkpoint.setup(boundary_y)
 
@@ -186,12 +191,16 @@ func create_chunk(chunk_coords: Vector2i, storage: ChunkStorage= null):
 	var chunk: WorldChunk= world_chunk_scene.instantiate()
 	chunk.name= str(chunk_coords)
 	chunk.position= chunk_coords * WorldChunk.SIZE * TILE_SIZE
+	# Set world reference BEFORE add_child so generate_tiles() works even when
+	# called from the chunk_updater thread (where _ready() has not fired yet).
+	chunk.world= self
 	chunks.add_child(chunk)
 	chunk.coords= chunk_coords
 	if storage:
 		chunk.restore(storage)
 	else:
 		chunk.generate_tiles()
+
 
 
 func get_chunk_storage(chunk_coords: Vector2i)-> ChunkStorage:

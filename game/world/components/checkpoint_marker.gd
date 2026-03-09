@@ -17,6 +17,8 @@ const INACTIVE_COLOR := Color(0.5, 0.5, 0.5, 0.6)
 const ACTIVE_COLOR := Color(1.0, 0.85, 0.2, 1.0)
 const GLOW_COLOR := Color(1.0, 0.95, 0.5, 1.0)
 
+const TILE_SIZE := 32  ## Matches World.TILE_SIZE — defined locally to avoid circular dependency
+
 
 func _ready():
 	body_entered.connect(_on_body_entered)
@@ -26,15 +28,15 @@ func _ready():
 func setup(y_pos: int, map_width_tiles: int = 50):
 	boundary_y = y_pos
 	# Position at the center of the boundary row
-	position = Vector2(0, y_pos * World.TILE_SIZE + World.TILE_SIZE / 2)
+	position = Vector2(0, y_pos * TILE_SIZE + TILE_SIZE / 2)
 	
 	# Set collision shape to span the full map width
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(map_width_tiles * World.TILE_SIZE, World.TILE_SIZE * 2)
+	shape.size = Vector2(map_width_tiles * TILE_SIZE, TILE_SIZE * 2)
 	collision_shape.shape = shape
 	
 	# Set the visual line to span the full width
-	var half_width: float = (map_width_tiles * World.TILE_SIZE) / 2.0
+	var half_width: float = (map_width_tiles * TILE_SIZE) / 2.0
 	line.clear_points()
 	line.add_point(Vector2(-half_width, 0))
 	line.add_point(Vector2(half_width, 0))
