@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://game/ui/section_hud.gd" id="1_section_hud"]
+
+[node name="SectionHUD" type="CanvasLayer"]
+layer = 90
+process_mode = 3
+script = ExtResource("1_section_hud")
+
+[node name="SectionPanel" type="PanelContainer" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -150.0
+offset_top = 60.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+
+[node name="SectionLabel" type="Label" parent="SectionPanel"]
+layout_mode = 2
+text = "🌍  CRUST"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
+theme_override_colors/font_shadow_color = Color(0.0, 0.0, 0.0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+
+[node name="DepthPanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 55.0
+offset_right = -100.0
+offset_bottom = 80.0
+grow_horizontal = 0
+
+[node name="DepthLabel" type="Label" parent="DepthPanel"]
+layout_mode = 2
+text = "Depth: 0 m"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1.0)

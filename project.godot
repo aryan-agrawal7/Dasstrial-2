@@ -32,6 +32,9 @@ UserConfig="*res://game/autoload singletons/user_config.gd"
 PositionalSoundPlayer="*res://game/audio/positional_sound_player.tscn"
 AdminPanel="*res://game/ui/admin/admin_panel.tscn"
 GameTimer="*res://game/ui/game_timer.tscn"
+PauseMenu="*res://game/ui/pause_menu.tscn"
+SectionManager="*res://game/autoload singletons/section_manager.gd"
+SectionHUD="*res://game/ui/section_hud.tscn"
 
 [editor]
 

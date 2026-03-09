@@ -19,6 +19,7 @@ const TILE_SIZE= 32
 @export_category("Static Resources")
 @export var explosion_particles: ParticleSettings
 @export var world_item_scene: PackedScene
+var checkpoint_scene: PackedScene = preload("res://game/world/components/checkpoint_marker.tscn")
 @export var world_chunk_scene: PackedScene
 
 
@@ -62,9 +63,19 @@ func start():
 	
 	if enable_mob_spawner:
 		mob_spawner.start()
-	
+
+	# Spawn checkpoint markers at each section boundary
+	_spawn_checkpoints()
+
 	initialization_finished.emit()
 	set_physics_process(true)
+
+
+func _spawn_checkpoints():
+	for boundary_y in SectionManager.section_boundaries:
+		var checkpoint = checkpoint_scene.instantiate()
+		add_child(checkpoint)
+		checkpoint.setup(boundary_y)
 
 
 func _physics_process(_delta):

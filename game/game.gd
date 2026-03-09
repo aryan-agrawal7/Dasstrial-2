@@ -21,6 +21,7 @@ func _init():
 
 func _ready():
 	get_tree().paused= false
+	SectionManager.reset()
 
 	game_is_over.connect(GameManager.game_over)
 
@@ -67,7 +68,14 @@ func spawn_player():
 	assert(player_scene)
 	assert(player == null)
 	player= player_scene.instantiate()
-	player.position= settings.player_spawn
+
+	# Use checkpoint position if one has been activated, otherwise default spawn
+	var respawn_pos: Vector2i = SectionManager.get_respawn_position()
+	if respawn_pos != Vector2i.ZERO:
+		player.position = Vector2(respawn_pos) * World.TILE_SIZE
+	else:
+		player.position= settings.player_spawn
+
 	add_child.call_deferred(player)
 	player.ready.connect(on_player_spawned)
 
