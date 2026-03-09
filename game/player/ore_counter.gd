@@ -49,10 +49,10 @@ func consume_item(item_name: String, player: BasePlayer) -> bool:
 		
 		# Apply your specific healing/repair logic
 		match item_name:
-			"Water Pod":
+			"water":
 				player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 20)
 				player.hull_temp = max(0, player.hull_temp + 20)
-			"Oxygen Pod":
+			"oxygen":
 				player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 40)
 			"iron_ore":
 				player.drill_sharpness = min(player.max_sharpness, player.drill_sharpness+25)
