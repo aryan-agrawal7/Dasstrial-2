@@ -227,13 +227,14 @@ func _tick_environmental_damage(delta: float):
 	var integrity_drain: float = (0.5 + 3.0 * f + 1.5 * sin(f * PI)) * 0.25 * delta
 	hull_integrity = max(0.0, hull_integrity - integrity_drain)
 
-	## ── Temperature → health (1.5× hull rate, always active) ────────────────
-	var hp_drain: float = 12.0 * pow(f, 2.2) * delta
+	## ── Health only drains when hull systems are breached ────────────────────
+	var hp_drain: float = 0.0
 	if hull_temp <= 0.0:
 		hp_drain += 5.0 * delta    # Hull no longer regulating heat
 	if hull_integrity <= 0.0:
 		hp_drain += 7.0 * delta    # Pressure breach
-	health.receive_damage(Damage.new(hp_drain, Damage.Type.ENVIRONMENT))
+	if hp_drain > 0.0:
+		health.receive_damage(Damage.new(hp_drain, Damage.Type.ENVIRONMENT))
 
 
 
