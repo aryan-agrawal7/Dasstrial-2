@@ -42,7 +42,7 @@ const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
 var ORE_COAL: Item = preload("res://game/items/coal ore/coal_ore.tres")
 var ORE_IRON: Item = preload("res://game/items/iron ore/iron_ore.tres")
 var ORE_GOLD: Item = preload("res://game/items/gold ore/gold_ore.tres")
-var ORE_GODOT: Item = preload("res://game/items/godot ore/godot_ore.tres")
+var ORE_DIAMOND: Item = preload("res://game/items/diamond ore/diamond_ore.tres")
 var POD_WATER: Item = preload("res://game/items/water_pod/water_pod.tres")
 var POD_OXYGEN: Item = preload("res://game/items/oxygen_pod/oxygen_pod.tres")
 
@@ -112,7 +112,7 @@ func _ready():
 	ore_counter.register_ore(ORE_COAL)
 	ore_counter.register_ore(ORE_IRON)
 	ore_counter.register_ore(ORE_GOLD)
-	ore_counter.register_ore(ORE_GODOT)
+	ore_counter.register_ore(ORE_DIAMOND)
 	ore_counter.register_ore(POD_WATER)
 	ore_counter.register_ore(POD_OXYGEN)
 
