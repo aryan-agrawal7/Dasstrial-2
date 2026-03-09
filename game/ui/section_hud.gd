@@ -11,7 +11,7 @@ extends CanvasLayer
 @onready var depth_bar: ProgressBar = $ProgressContainer/DepthBar
 @onready var depth_percent: Label = $ProgressContainer/DepthPercent
 
-const BOTTOM_LIMIT: float = 150.0
+const BOTTOM_LIMIT: float = 1050.0
 
 var display_tween: Tween
 

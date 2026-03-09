@@ -7,15 +7,15 @@ signal section_changed(old_section: String, new_section: String)
 
 ## Section definitions — order matters (checked sequentially)
 var sections: Array[Dictionary] = [
-	{"name": "Crust",    "start_y": 0,   "end_y": 29,  "color": Color(0.55, 0.35, 0.17)},
-	{"name": "Mantle",   "start_y": 30,  "end_y": 59,  "color": Color(1.0, 0.35, 0.1)},
-	{"name": "Core",     "start_y": 60,  "end_y": 89,  "color": Color(0.9, 0.1, 0.1)},
-	{"name": "Mantle-2", "start_y": 90,  "end_y": 119, "color": Color(1.0, 0.35, 0.1)},
-	{"name": "Crust-2",  "start_y": 120, "end_y": 150, "color": Color(0.55, 0.35, 0.17)},
+	{"name": "Crust",    "start_y": 0,   "end_y": 299,  "color": Color(0.55, 0.35, 0.17)},
+	{"name": "Mantle",   "start_y": 300,  "end_y": 449,  "color": Color(1.0, 0.35, 0.1)},
+	{"name": "Core",     "start_y": 450,  "end_y": 599,  "color": Color(0.9, 0.1, 0.1)},
+	{"name": "Mantle-2", "start_y": 600,  "end_y": 749, "color": Color(1.0, 0.35, 0.1)},
+	{"name": "Crust-2",  "start_y": 750, "end_y": 1050, "color": Color(0.55, 0.35, 0.17)},
 ]
 
 ## The section boundary y-values (where checkpoints go)
-var section_boundaries: Array[int] = [30, 60, 90, 120]
+var section_boundaries: Array[int] = [300, 450, 600, 750]
 
 var current_section: String = ""
 
