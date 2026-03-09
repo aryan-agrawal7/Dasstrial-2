@@ -12,19 +12,39 @@ var black_finish_block: Block = preload("res://game/blocks/finish_blocks/black_f
 var white_finish_block: Block = preload("res://game/blocks/finish_blocks/white_finish_block.tres")
 var bottom_limit: int = 150
 
-## Section boundary y-values — markers will be placed here
+## Section boundary y-values (used by world.gd for checkpoint placement)
 var section_boundaries: Array[int] = [30, 60, 90, 120]
+
+## Pod blocks — generated as veins in specific depth zones
+var water_pod_block: Block = preload("res://game/blocks/water_pod_block/water_pod_block.tres")
+var oxygen_pod_block: Block = preload("res://game/blocks/oxygen_pod_block/oxygen_pod_block.tres")
+
+## Separate noise instances so pod veins have their own pattern
+var _water_noise: FastNoiseLite
+var _oxygen_noise: FastNoiseLite
 
 
 func initialize():
 	for instruction in instructions:
 		instruction.initialize(self)
 
+	# Set up water pod noise — coarse blobs, tuned to feel like pockets of water
+	_water_noise = FastNoiseLite.new()
+	_water_noise.seed = 7391
+	_water_noise.frequency = 0.18
+	_water_noise.fractal_octaves = 2
+
+	# Set up oxygen pod noise — finer, slightly denser to reflect pressure pockets
+	_oxygen_noise = FastNoiseLite.new()
+	_oxygen_noise.seed = 4582
+	_oxygen_noise.frequency = 0.22
+	_oxygen_noise.fractal_octaves = 2
+
 
 func get_block_id(pos: Vector2i)-> int:
 	if pos.x < -25 or pos.x > 25:
 		return -1
-		
+
 	if pos.y == bottom_limit or pos.y == bottom_limit - 1:
 		if (pos.x + pos.y) % 2 == 0:
 			return DataManager.get_block_id(black_finish_block)
@@ -33,18 +53,9 @@ func get_block_id(pos: Vector2i)-> int:
 	elif pos.y > bottom_limit:
 		return -1
 
-	## Section boundary marker rows — alternating checkerboard pattern
-	## These create a visible horizontal line at each section transition
-	if pos.y in section_boundaries:
-		if (pos.x + pos.y) % 2 == 0:
-			return DataManager.get_block_id(black_finish_block)
-		else:
-			return DataManager.get_block_id(white_finish_block)
-
 	var block: Block
-
 	var cave:= false
-	
+
 	for instruction in instructions:
 		var new_block: Block= instruction.get_block(pos)
 		if new_block:
@@ -55,7 +66,32 @@ func get_block_id(pos: Vector2i)-> int:
 		cave_cache.append(pos)
 
 	if not block or block.is_air: return -1
+
+	## Inject pod blocks as veins — only replaces solid blocks, never caves
+	var pod := _get_pod_block(pos)
+	if pod:
+		block = pod
+
 	return DataManager.get_block_id(block)
+
+
+## Returns a pod block if the position falls in a pod vein, otherwise null.
+## Water pods: Mantle depth zones (warm, high-moisture areas)
+## Oxygen pods: Core zone (high pressure, concentrated gas pockets)
+func _get_pod_block(pos: Vector2i) -> Block:
+	var y := pos.y
+
+	# Water pods — appear in both mantle bands
+	if (y >= 25 and y < 65) or (y >= 85 and y < 125):
+		if _water_noise.get_noise_2d(pos.x, pos.y) > 0.72:
+			return water_pod_block
+
+	# Oxygen pods — concentrated in the core and transition zones
+	if y >= 50 and y < 115:
+		if _oxygen_noise.get_noise_2d(pos.x * 1.3, pos.y * 1.3) > 0.76:
+			return oxygen_pod_block
+
+	return null
 
 
 func start_caching_caves():
