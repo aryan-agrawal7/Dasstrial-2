@@ -4,42 +4,62 @@ extends Resource
 @export var blocks: Array[Block]
 @export var noise: FastNoiseLite
 @export var noise_threshold: float
-## Per-block thresholds (optional). If set, overrides noise_threshold per block.
-## Higher threshold = rarer ore. Order must match blocks array.
-@export var noise_thresholds: PackedFloat32Array = PackedFloat32Array()
+## Per-block spawn weights (must match blocks array order).
+## Higher weight = more common relative to other ores.
+## Example: [40, 30, 15, 5] → iron 44%, coal 33%, diamond 17%, gold 6%.
+@export var spawn_weights: PackedFloat32Array = PackedFloat32Array()
 
-var processed_noises: Array[FastNoiseLite]
+var _ore_noise: FastNoiseLite
 
 
 func initialize():
 	var current_seed: int
 	if GameManager.world_seed:
-		current_seed= hash(GameManager.world_seed)
+		current_seed = hash(GameManager.world_seed)
 	else:
-		current_seed= Global.game.settings.world_seed
-	
-	if noise:
-		for i in blocks.size():
-			var new_noise: FastNoiseLite= noise.duplicate(true)
-			new_noise.seed= current_seed
-			processed_noises.append(new_noise)
-			current_seed= wrapi(current_seed + 100, 0, 1_000_000)
-		
+		current_seed = Global.game.settings.world_seed
 
-func get_block(pos: Vector2i)-> Block:
+	if noise:
+		_ore_noise = noise.duplicate(true)
+		_ore_noise.seed = current_seed
+
+
+func get_block(pos: Vector2i) -> Block:
 	if not noise:
 		return blocks[0]
-	# Collect all blocks whose noise qualifies, then pick one at random
-	# This ensures equal spawn chance when multiple ores share the same threshold
-	var candidates: Array[Block] = []
-	var bonus: float = GameManager.ore_spawn_bonus if GameManager else 0.0
-	for i in len(blocks):
-		var threshold: float = noise_thresholds[i] if i < noise_thresholds.size() else noise_threshold
-		threshold -= bonus
-		if processed_noises[i].get_noise_2dv(pos) > threshold:
-			candidates.append(blocks[i])
-	if candidates.is_empty():
+
+	# Single noise check: does an ore spawn here at all?
+	# Only apply gold bonus to ore distributions (those with spawn_weights)
+	var bonus: float = 0.0
+	if not spawn_weights.is_empty() and GameManager:
+		bonus = GameManager.ore_spawn_bonus
+	var threshold: float = noise_threshold - bonus
+	var noise_val: float = _ore_noise.get_noise_2d(float(pos.x), float(pos.y))
+	if noise_val <= threshold:
 		return null
-	# Use a position-based hash for deterministic but uniform selection
-	var pick: int = (hash(pos) & 0x7FFFFFFF) % candidates.size()
-	return candidates[pick]
+
+	# Ore spawns here — pick WHICH ore using weighted random from position hash
+	if spawn_weights.is_empty() or spawn_weights.size() != blocks.size():
+		# Fallback: uniform pick
+		var pick: int = (hash(pos) & 0x7FFFFFFF) % blocks.size()
+		return blocks[pick]
+
+	# Build cumulative weights (excluding gold from bonus boost)
+	var total_weight: float = 0.0
+	var cumulative: PackedFloat32Array = PackedFloat32Array()
+	for i in spawn_weights.size():
+		var w: float = spawn_weights[i]
+		# Gold does not get boosted by gold ore_spawn_bonus
+		var block: Block = blocks[i]
+		if block and block.name != "" and block.name != "gold":
+			w += bonus * 100.0  # Scale bonus into weight space
+		total_weight += w
+		cumulative.append(total_weight)
+
+	# Deterministic pick from a hash-derived float in [0, total_weight)
+	var h: float = float(hash(pos) & 0x7FFFFFFF) / float(0x7FFFFFFF) * total_weight
+	for i in cumulative.size():
+		if h < cumulative[i]:
+			return blocks[i]
+
+	return blocks[blocks.size() - 1]
