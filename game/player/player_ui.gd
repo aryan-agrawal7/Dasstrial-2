@@ -25,6 +25,11 @@ var ore_labels: Dictionary = {}
 var danger_vignette: ColorRect
 var vignette_material: ShaderMaterial
 
+## Touch control buttons
+var _left_btn: Button
+var _right_btn: Button
+var _upgrade_btn: Button
+
 
 func _ready():
 	assert(player)
@@ -32,6 +37,9 @@ func _ready():
 
 	# Build the red vignette overlay (full-screen, above everything)
 	_build_danger_vignette()
+
+	# Build touch control buttons for mobile
+	_build_touch_controls()
 
 	# Defer building the ore display — the player's _ready() hasn't run yet
 	# (children are ready before parents in Godot), so ore_counter.ore_items
@@ -160,3 +168,108 @@ func update_subsystems():
 	hull_temp.gauge_value = player.hull_temp
 	hull_integrity.gauge_value = player.hull_integrity
 	drill_sharpness.gauge_value = player.drill_sharpness
+
+
+# ---- Touch Controls ----
+
+func _build_touch_controls():
+	var btn_size := Vector2(100, 100)
+	var btn_font_size := 32
+	var margin := 20
+
+	# — Left button (bottom-left) —
+	_left_btn = Button.new()
+	_left_btn.text = "◀"
+	_left_btn.custom_minimum_size = btn_size
+	_left_btn.anchors_preset = Control.PRESET_BOTTOM_LEFT
+	_left_btn.anchor_left = 0.0
+	_left_btn.anchor_top = 1.0
+	_left_btn.anchor_right = 0.0
+	_left_btn.anchor_bottom = 1.0
+	_left_btn.offset_left = margin
+	_left_btn.offset_top = -(btn_size.y + margin)
+	_left_btn.offset_right = margin + btn_size.x
+	_left_btn.offset_bottom = -margin
+	_left_btn.add_theme_font_size_override("font_size", btn_font_size)
+	_style_touch_button(_left_btn, Color(0.2, 0.2, 0.3, 0.6))
+	_left_btn.button_down.connect(_on_left_pressed)
+	_left_btn.button_up.connect(_on_left_released)
+	add_child(_left_btn)
+
+	# — Right button (bottom-right) —
+	_right_btn = Button.new()
+	_right_btn.text = "▶"
+	_right_btn.custom_minimum_size = btn_size
+	_right_btn.anchors_preset = Control.PRESET_BOTTOM_RIGHT
+	_right_btn.anchor_left = 1.0
+	_right_btn.anchor_top = 1.0
+	_right_btn.anchor_right = 1.0
+	_right_btn.anchor_bottom = 1.0
+	_right_btn.offset_left = -(btn_size.x + margin)
+	_right_btn.offset_top = -(btn_size.y + margin)
+	_right_btn.offset_right = -margin
+	_right_btn.offset_bottom = -margin
+	_right_btn.add_theme_font_size_override("font_size", btn_font_size)
+	_style_touch_button(_right_btn, Color(0.2, 0.2, 0.3, 0.6))
+	_right_btn.button_down.connect(_on_right_pressed)
+	_right_btn.button_up.connect(_on_right_released)
+	add_child(_right_btn)
+
+	# — Upgrade button (top-right, below ore panel) —
+	_upgrade_btn = Button.new()
+	_upgrade_btn.text = "⬆ Upgrade"
+	_upgrade_btn.custom_minimum_size = Vector2(120, 50)
+	_upgrade_btn.anchor_left = 1.0
+	_upgrade_btn.anchor_top = 0.0
+	_upgrade_btn.anchor_right = 1.0
+	_upgrade_btn.anchor_bottom = 0.0
+	# Positioned below the ore panel (ore panel is ~20px margin + panel height)
+	# We'll use a generous top offset so it sits under the counters
+	_upgrade_btn.offset_left = -140
+	_upgrade_btn.offset_top = 260
+	_upgrade_btn.offset_right = -20
+	_upgrade_btn.offset_bottom = 310
+	_upgrade_btn.add_theme_font_size_override("font_size", 18)
+	_style_touch_button(_upgrade_btn, Color(0.5, 0.35, 0.1, 0.75))
+	_upgrade_btn.pressed.connect(_on_upgrade_pressed)
+	add_child(_upgrade_btn)
+
+
+func _style_touch_button(btn: Button, bg_color: Color):
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = bg_color
+	normal.corner_radius_top_left = 12
+	normal.corner_radius_top_right = 12
+	normal.corner_radius_bottom_left = 12
+	normal.corner_radius_bottom_right = 12
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = Color(1, 1, 1, 0.3)
+	btn.add_theme_stylebox_override("normal", normal)
+
+	var hover := normal.duplicate()
+	hover.bg_color = bg_color.lightened(0.15)
+	btn.add_theme_stylebox_override("hover", hover)
+
+	var pressed := normal.duplicate()
+	pressed.bg_color = bg_color.lightened(0.3)
+	btn.add_theme_stylebox_override("pressed", pressed)
+
+
+func _on_left_pressed():
+	Input.action_press("left")
+
+func _on_left_released():
+	Input.action_release("left")
+
+func _on_right_pressed():
+	Input.action_press("right")
+
+func _on_right_released():
+	Input.action_release("right")
+
+func _on_upgrade_pressed():
+	if player and player.t_menu:
+		player.t_menu.open()
