@@ -31,7 +31,6 @@ cheats = SubResource("Resource_g2rh2")
 player_scene = ExtResource("5_ljp5k")
 
 [node name="World" parent="." instance=ExtResource("6_u23cu")]
-enable_mob_spawner = false
 generator = ExtResource("7_fuie1")
 
 [node name="Camera2D" type="Camera2D" parent="."]

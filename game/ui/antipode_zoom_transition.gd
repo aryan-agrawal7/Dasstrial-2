@@ -10,7 +10,6 @@ extends CanvasLayer
 @onready var character_sprite: TextureRect = $CharacterSprite
 @onready var antipode_label: Label = $AntipodeLabel
 @onready var location_label: Label = $LocationLabel
-@onready var home_button: Button = $HomeButton
 @onready var run_time_label: Label = $RunTimeLabel
 
 ## Satellite zoom levels: full set for land, reduced for water
@@ -43,8 +42,6 @@ func _ready():
 	character_sprite.modulate.a = 0
 	antipode_label.modulate.a = 0
 	location_label.modulate.a = 0
-	home_button.modulate.a = 0
-	home_button.hide()
 	run_time_label.modulate.a = 0
 
 	# Show final run time
@@ -66,7 +63,6 @@ func _ready():
 		return
 
 	loading_label.text = "Locating the antipode..."
-	home_button.pressed.connect(_return_to_menu)
 	_load_character_skin()
 	_check_if_water()
 	_fetch_all_tiles()

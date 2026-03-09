@@ -32,8 +32,6 @@ func on_equip():
 		
 		var entity_parent: Node
 		entity_parent= Utils.find_custom_parent(self, BasePlayer)
-		if not entity_parent:
-			entity_parent= Utils.find_custom_parent(self, BaseMob)
 		
 		if not entity_parent: return
 		

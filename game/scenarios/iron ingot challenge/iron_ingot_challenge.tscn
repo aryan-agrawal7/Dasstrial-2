@@ -15,7 +15,6 @@ settings = ExtResource("3_smhpu")
 player_scene = ExtResource("3_0oxmp")
 
 [node name="World" parent="." index="1"]
-enable_mob_spawner = false
 
 [node name="Level Editor" parent="." index="3"]
 tile_set = null

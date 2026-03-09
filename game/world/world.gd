@@ -8,7 +8,6 @@ const BLOCK_TICKS= 5
 
 const TILE_SIZE= 32
 
-@export var enable_mob_spawner: bool= true
 @export var generator: TerrainGenerator
 @export var disable_environment: bool= false
 @export var disable_background: bool= false
@@ -23,9 +22,7 @@ const TILE_SIZE= 32
 
 
 @onready var chunk_updater: ChunkUpdater = $"Chunk Updater"
-@onready var mobs = $Mobs
 @onready var block_entities = $"Block Entities"
-@onready var mob_spawner = $"Mob Spawner"
 @onready var backgound = $Backgound
 @onready var environment: MyWorldEnvironment = $Environment
 
@@ -63,9 +60,6 @@ func start():
 	await get_parent().pre_start()
 	
 	chunk_updater.start()
-	
-	if enable_mob_spawner:
-		mob_spawner.start()
 
 	# Spawn checkpoint markers at each section boundary
 	_spawn_checkpoints()
@@ -306,32 +300,6 @@ func unsubscribe_from_block_change(block_pos: Vector2i, obj: Object):
 			block_change_subscriptions[block_pos].erase(callable)
 	
 	
-func spawn_mob(mob_def: MobDefinition, tile: Vector2i):
-	var mob= mob_def.scene.instantiate()
-	mob.type= mob_def
-	mob.world= self
-	mob.position= map_to_local(tile)
-	mobs.add_child(mob)
-
-
-func remove_mobs_in_rect(rect: Rect2):
-	for mob in mobs.get_children():
-		if rect.has_point(mob.global_position):
-			mob.queue_free()
-
-
-func get_closest_mob(tile: Vector2i, type: MobDefinition= null)-> BaseMob:
-	var closest: BaseMob= null
-	for mob in mobs.get_children():
-		if type and type != mob.type:
-			continue
-			
-		if not closest or closest.distance_to_tile(tile) > mob.distance_to_tile(tile):
-			closest= mob
-
-	return closest
-
-
 func explosion(center: Vector2i, damage: float, radius: float, block_dmg_factor: float= 1):
 	for x in range(-radius, radius):
 		for y in range(-radius, radius):
