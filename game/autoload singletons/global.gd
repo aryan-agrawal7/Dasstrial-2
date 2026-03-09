@@ -10,3 +10,19 @@ const SOLID_ENTITY_COLLISION_LAYER= 8
 const HEALT_COMPONENT_NODE= "Health Component"
 
 var game: Game
+
+var bg_music_player: AudioStreamPlayer
+
+func _ready():
+	bg_music_player = AudioStreamPlayer.new()
+	bg_music_player.name = "BackgroundMusic"
+	bg_music_player.stream = preload("res://game/audio/BgMusic.ogg")
+	# Optional: you can set bus or volume here if needed:
+	# bg_music_player.bus = "Master"
+	# bg_music_player.volume_db = -5.0
+	
+	# Add directly to the global autoload node so it survives scene changes
+	add_child(bg_music_player)
+	
+	bg_music_player.play()
+
