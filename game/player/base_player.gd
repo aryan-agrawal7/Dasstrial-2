@@ -317,7 +317,10 @@ func on_swim():
 ## This is the core mechanic — the player drills downward and cannot stop.
 func auto_mine(delta: float):
 	auto_mine_timer += delta
-	if auto_mine_timer < auto_mine_interval:
+	# Drill gets slower as sharpness decreases (up to 3x slower at zero sharpness)
+	var sharpness_ratio: float = drill_sharpness / max_sharpness if max_sharpness > 0 else 0.0
+	var effective_interval: float = auto_mine_interval * (1.0 + (1.0 - sharpness_ratio) * 2.0)
+	if auto_mine_timer < effective_interval:
 		return
 	auto_mine_timer = 0.0
 
@@ -526,14 +529,5 @@ func play_hand_item_sound(_target_material: MaterialSoundLibrary.Type):
 func _unhandled_input(event: InputEvent):
 	if freeze: return
 	
-	if event.is_action_pressed("use_water_pod"):
-		ore_counter.consume_item("Water Pod", self)
-		
-	elif event.is_action_pressed("use_oxygen_pod"):
-		ore_counter.consume_item("Oxygen Pod", self)
-		
-	elif event.is_action_pressed("sharpen_drill"):
+	if event.is_action_pressed("sharpen_drill"):
 		t_menu.open()
-		
-	elif event.is_action_pressed("use_ore"):
-		ore_counter.consume_item("gold_ore", self)

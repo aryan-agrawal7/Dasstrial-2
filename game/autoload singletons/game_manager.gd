@@ -32,6 +32,9 @@ var game_start_resource: GameStart
 ## (e.g. from _physics_process while standing on finish blocks).
 var _game_over_triggered: bool = false
 
+## Bonus applied to ore spawn thresholds (lowered = more ores). Increased by gold use.
+var ore_spawn_bonus: float = 0.0
+
 ## Stores final run time so the antipode screen can display it
 var final_run_time: float = 0.0
 
@@ -61,6 +64,7 @@ func run_game(scene: PackedScene):
 
 func run_deferred(scene: PackedScene):
 	_game_over_triggered = false
+	ore_spawn_bonus = 0.0
 	assert(get_tree().change_scene_to_packed(scene) == OK)
 
 
