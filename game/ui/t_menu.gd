@@ -177,12 +177,12 @@ func _on_vis_pressed():
 		player.increase_visibility()
 		_update_buttons()
 
-## Water Pods: Heal player (+10 HP) and restore hull temp (+15)
+## Water Pods: Heal player (+15 HP) and restore hull temp (+20)
 func _on_water_pressed():
 	if player.ore_counter.get_count_by_name("Water Pod") >= 2:
 		player.ore_counter.consume_raw("Water Pod", 2)
-		player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 10)
-		player.hull_temp = min(player.max_hull_temp, player.hull_temp + 15)
+		player.health.hitpoints = min(player.health.max_hitpoints, player.health.hitpoints + 15)
+		player.hull_temp = min(player.max_hull_temp, player.hull_temp + 20)
 		_update_buttons()
 
 ## Oxygen Pods: Heal player (+40 HP)
