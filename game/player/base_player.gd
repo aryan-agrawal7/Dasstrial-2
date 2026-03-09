@@ -88,6 +88,13 @@ var auto_mine_timer: float = 0.0
 ## Tracks last horizontal input direction for auto-mining
 var auto_mine_direction: int = 0
 
+## Fog variables
+var t_menu: TMenu
+var fow_light: PointLight2D
+var visibility_level: int = 3 # starts with full visibility 3
+var visibility_timer: float = 0.0
+var visibility_shrink_interval: float = 12.0 # Shrinks every 12s for fast-paced gameplay
+
 
 func _ready():
 	assert_export_scenes()
@@ -110,9 +117,28 @@ func _ready():
 	ore_counter.register_ore(POD_OXYGEN)
 
 	init_block_indicators()
+	
+	t_menu = TMenu.new(self)
+	ui.add_child(t_menu)
+	
+	fow_light = PointLight2D.new()
+	var tex = GradientTexture2D.new()
+	var g = Gradient.new()
+	g.colors = PackedColorArray([Color.WHITE, Color.TRANSPARENT])
+	g.offsets = PackedFloat32Array([0.65, 1.0])
+	tex.gradient = g
+	tex.fill = GradientTexture2D.FILL_RADIAL
+	tex.fill_from = Vector2(0.5, 0.5)
+	tex.fill_to = Vector2(1.0, 0.5)
+	tex.width = 1200
+	tex.height = 1200
+	fow_light.texture = tex
+	fow_light.blend_mode = Light2D.BLEND_MODE_MIX
+	fow_light.shadow_enabled = true
+	add_child(fow_light)
+	_apply_visibility_scale(false)
 
-
-func _process(_delta):
+func _process(delta):
 	if freeze: return
 
 	# Face the direction the player is moving
@@ -120,6 +146,35 @@ func _process(_delta):
 		body.scale.x = 1
 	elif auto_mine_direction < 0:
 		body.scale.x = -1
+		
+	# Fog increasing with time
+	if visibility_level > 1:
+		visibility_timer += delta
+		if visibility_timer >= visibility_shrink_interval:
+			visibility_timer = 0.0
+			visibility_level -= 1
+			_apply_visibility_scale(true)
+
+func increase_visibility():
+	if visibility_level < 3:
+		visibility_level += 1
+		visibility_timer = 0.0
+		_apply_visibility_scale(true)
+
+func _apply_visibility_scale(animate: bool = true):
+	var target_scale = Vector2.ONE
+	if visibility_level == 3:
+		target_scale = Vector2(0.75, 0.75)
+	elif visibility_level == 2:
+		target_scale = Vector2(0.5, 0.5)
+	elif visibility_level == 1:
+		target_scale = Vector2(0.3, 0.3)
+		
+	if animate:
+		var tween = create_tween()
+		tween.tween_property(fow_light, "scale", target_scale, 0.5).set_trans(Tween.TRANS_SINE)
+	else:
+		fow_light.scale = target_scale
 
 
 func _physics_process(delta):
@@ -478,7 +533,7 @@ func _unhandled_input(event: InputEvent):
 		ore_counter.consume_item("Oxygen Pod", self)
 		
 	elif event.is_action_pressed("sharpen_drill"):
-		ore_counter.consume_item("iron_ore", self)
+		t_menu.open()
 		
 	elif event.is_action_pressed("use_ore"):
 		ore_counter.consume_item("gold_ore", self)

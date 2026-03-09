@@ -60,3 +60,10 @@ func consume_item(item_name: String, player: BasePlayer) -> bool:
 				player.hull_integrity = min(player.max_integrity, player.hull_integrity + 20)
 		return true
 	return false
+
+func consume_raw(item_name: String, amount: int = 1) -> bool:
+	if item_name in counts and counts[item_name] >= amount:
+		counts[item_name] -= amount
+		updated.emit()
+		return true
+	return false
