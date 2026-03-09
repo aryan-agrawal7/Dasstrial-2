@@ -67,7 +67,25 @@ func generate_tiles():
 	for pos in positions:
 		get_block(pos).on_chunk_generated(world, pos)
 
+	# Set the background layer color depending on this chunk's depth
+	# We evaluate based on the vertical center of the chunk so it aligns better with the exact layer boundaries
+	var chunk_y = coords.y * SIZE + (SIZE / 2)
+	var bg_color = Color(0.3, 0.3, 0.3) # Default crust grey background
+	
+	if chunk_y >= 300 and chunk_y < 450:
+		bg_color = Color(0.15, 0.15, 0.15) # Mantle dark grey
+	elif chunk_y >= 450 and chunk_y < 600:
+		bg_color = Color(0.5, 0.1, 0.05) # Core dull red
+	elif chunk_y >= 600 and chunk_y < 750:
+		bg_color = Color(0.15, 0.15, 0.15) # Mantle 2
+	elif chunk_y >= 750:
+		bg_color = Color(0.3, 0.3, 0.3) # Crust 2
+		
+	set_layer_modulate(BACKGROUND_LAYER, bg_color)
+
 	ignore_changes= false
+
+
 
 
 func tick_blocks():
@@ -207,6 +225,21 @@ func restore(storage: ChunkStorage):
 	
 	for tile in storage.cave:
 		set_cell(BACKGROUND_LAYER, tile, WHITE_TILE_SOURCE_ID, Vector2i.ZERO)
+		
+	# Re-apply background layer tint on restore
+	var chunk_y = coords.y * SIZE + (SIZE / 2)
+	var bg_color = Color(0.3, 0.3, 0.3)
+	
+	if chunk_y >= 300 and chunk_y < 450:
+		bg_color = Color(0.15, 0.15, 0.15)
+	elif chunk_y >= 450 and chunk_y < 600:
+		bg_color = Color(0.5, 0.1, 0.0)
+	elif chunk_y >= 600 and chunk_y < 750:
+		bg_color = Color(0.15, 0.15, 0.15)
+	elif chunk_y >= 750:
+		bg_color = Color(0.3, 0.3, 0.3)
+		
+	set_layer_modulate(BACKGROUND_LAYER, bg_color)
 	
 	ignore_changes= false
 
