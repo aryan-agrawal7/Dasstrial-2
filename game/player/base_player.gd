@@ -136,6 +136,45 @@ func _physics_process(delta):
 
 	global_position.x = clamp(global_position.x, -800, 800)
 	tick_effects()
+	_tick_environmental_damage(delta)
+
+
+## Passive environmental damage based on depth.
+##
+## TEMPERATURE — quadratic: heat is manageable at the surface but spikes
+##   catastrophically in the Core. Formula: drain = 5.5 * (depth_fraction ^ 2.2) ps
+##   → At y=0 (surface): ~0, at y=75 (Core mid): ~1.5/s, at y=150 (finish): ~5.5/s
+##
+## PRESSURE / INTEGRITY — linear + sinusoidal layer-transition spikes:
+##   The sine term peaks at section boundaries (y~37, 75, 112) where the player
+##   crosses material density changes. Formula: drain = (0.8 + 4.0*f + 2.0*sin(f*PI)) * 0.3 ps
+##   → At y=0: 0.24/s, at y=75: ~1.5/s, at y=150: ~2.4/s (peak during transitions)
+##
+## Consequence: when hull_temp/integrity ≤ 0 → deal HP damage to force resource management.
+func _tick_environmental_damage(delta: float):
+	var tile_y: int = get_tile_pos().y
+	if tile_y <= 0:
+		return  # No damage at the surface
+	if not health or not health.is_inside_tree():
+		return
+
+	var f: float = clamp(float(tile_y) / 150.0, 0.0, 1.0)
+
+	## ── Temperature drain (quadratic, heat-spike in Core) ──────────────────
+	var temp_drain: float = 5.5 * pow(f, 2.2) * delta
+	hull_temp = max(0.0, hull_temp - temp_drain)
+
+	## ── Pressure / Integrity drain (linear + sinusoidal layer transitions) ──
+	var integrity_drain: float = (0.8 + 4.0 * f + 2.0 * sin(f * PI)) * 0.3 * delta
+	hull_integrity = max(0.0, hull_integrity - integrity_drain)
+
+	## ── Overheating damage (hull_temp depleted) ────────────────────────────
+	if hull_temp <= 0.0:
+		health.receive_damage(Damage.new(6.0 * delta, Damage.Type.ENVIRONMENT))
+
+	## ── Pressure damage (hull_integrity depleted) ──────────────────────────
+	if hull_integrity <= 0.0:
+		health.receive_damage(Damage.new(10.0 * delta, Damage.Type.ENVIRONMENT))
 
 
 func sidescroll_movement(delta):
