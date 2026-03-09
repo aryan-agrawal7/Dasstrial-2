@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://b4uyq2o7u54dp"]
 
 [ext_resource type="Script" uid="uid://clhbfp352g74s" path="res://game/player/player_ui.gd" id="1_cefh8"]
-[ext_resource type="Script" path="res://game/player/gauge_dial.gd" id="gauge_dial"]
+[ext_resource type="Script" uid="uid://blo7e1h71o36d" path="res://game/player/gauge_dial.gd" id="gauge_dial"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orepanel"]
 content_margin_left = 10.0
@@ -33,14 +33,14 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 
-[node name="Gauges" type="MarginContainer" parent="."]
+[node name="Gauges" type="MarginContainer" parent="." unique_id=461076805]
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_constants/margin_top = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Gauges"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Gauges" unique_id=1831073167]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 0
@@ -53,8 +53,6 @@ layout_mode = 2
 mouse_filter = 2
 script = ExtResource("gauge_dial")
 gauge_label = "HEALTH"
-gauge_color = Color(0.2, 0.8, 0.4, 1)
-danger_threshold = 25.0
 
 [node name="Hull Integrity" type="Control" parent="Gauges/HBoxContainer" unique_id=1923616465]
 unique_name_in_owner = true
@@ -84,7 +82,6 @@ mouse_filter = 2
 script = ExtResource("gauge_dial")
 gauge_label = "HULL TEMP"
 gauge_color = Color(0.85, 0.35, 0.15, 1)
-danger_threshold = 25.0
 
 [node name="Ore Panel" type="MarginContainer" parent="." unique_id=1449697365]
 anchors_preset = 1

@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://game/world/terrain generator/terrain_generator.gd" id="8_g8it4"]
 [ext_resource type="Resource" uid="uid://mmw13x1t1pjw" path="res://game/blocks/grass block/grass_block.tres" id="9_bjedn"]
 [ext_resource type="Resource" uid="uid://bcgd2xhiy1kks" path="res://game/blocks/gold block/gold_block.tres" id="10_gold"]
+[ext_resource type="Resource" uid="uid://b3kw8v9n2hpq7e" path="res://game/blocks/water_pod_block/water_pod_block.tres" id="11_water"]
+[ext_resource type="Resource" uid="uid://yri6lpsfowbb" path="res://game/blocks/oxygen_pod_block/oxygen_pod_block.tres" id="12_oxygen"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_busjf"]
 frequency = 0.0287
@@ -32,9 +34,10 @@ frequency = 0.2
 
 [sub_resource type="Resource" id="Resource_ores_dist"]
 script = ExtResource("2_ud22x")
-blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("4_5kwcy"), ExtResource("5_dkur4"), ExtResource("10_gold"), ExtResource("6_cdd3r")])
+blocks = Array[Resource("res://game/blocks/block.gd")]([ExtResource("4_5kwcy"), ExtResource("5_dkur4"), ExtResource("10_gold"), ExtResource("6_cdd3r"), ExtResource("11_water"), ExtResource("12_oxygen")])
 noise = SubResource("FastNoiseLite_ores")
 noise_threshold = 0.35
+spawn_weights = PackedFloat32Array(30, 40, 5, 15, 20, 15)
 
 [sub_resource type="Resource" id="Resource_ores_inst"]
 script = ExtResource("3_0sel7")
