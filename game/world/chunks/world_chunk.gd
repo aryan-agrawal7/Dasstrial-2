@@ -301,4 +301,6 @@ static func create_tileset():
 	DataManager.tile_set.add_source(source)
 	WHITE_TILE_SOURCE_ID= len(DataManager.blocks)
 
-	ResourceSaver.save(DataManager.tile_set, DataManager.TILE_SET_PATH)
+	# Skip saving on web – writing to res:// is forbidden in HTML5 exports
+	if not OS.has_feature("web"):
+		ResourceSaver.save(DataManager.tile_set, DataManager.TILE_SET_PATH)

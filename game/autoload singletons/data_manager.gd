@@ -33,6 +33,86 @@ var scenarios: Array[PackedScene]
 var characters: Array[PackedScene]
 
 
+# ── Static resource paths for web export compatibility ──────────────────────
+# DirAccess directory scanning does not work in HTML5/web builds.
+# When you add or remove a resource, update the matching array below.
+
+const STATIC_BLOCK_PATHS: Array[String] = [
+	"res://game/blocks/air block/air_block.tres",
+	"res://game/blocks/clay block/clay_block.tres",
+	"res://game/blocks/coal block/coal_block.tres",
+	"res://game/blocks/coal block/coal_core_block.tres",
+	"res://game/blocks/coal block/coal_mantle_block.tres",
+	"res://game/blocks/diamond block/diamond_block.tres",
+	"res://game/blocks/diamond block/diamond_core_block.tres",
+	"res://game/blocks/diamond block/diamond_mantle_block.tres",
+	"res://game/blocks/dirt block/dirt_block.tres",
+	"res://game/blocks/finish_blocks/black_finish_block.tres",
+	"res://game/blocks/finish_blocks/white_finish_block.tres",
+	"res://game/blocks/gold block/gold_block.tres",
+	"res://game/blocks/gold block/gold_core_block.tres",
+	"res://game/blocks/gold block/gold_mantle_block.tres",
+	"res://game/blocks/grass block/grass_block.tres",
+	"res://game/blocks/iron block/iron_block.tres",
+	"res://game/blocks/iron block/iron_core_block.tres",
+	"res://game/blocks/iron block/iron_mantle_block.tres",
+	"res://game/blocks/oxygen_pod_block/oxygen_pod_block.tres",
+	"res://game/blocks/smooth stone block/smooth_stone_block.tres",
+	"res://game/blocks/stone block/stone_block.tres",
+	"res://game/blocks/stone block/stone_core_block.tres",
+	"res://game/blocks/stone block/stone_mantle_block.tres",
+	"res://game/blocks/stone ramp/stone_ramp_block.tres",
+	"res://game/blocks/water blocks/water_block.tres",
+	"res://game/blocks/water blocks/water_half_block.tres",
+	"res://game/blocks/water blocks/water_half_flowing_block.tres",
+	"res://game/blocks/water blocks/water_quarter_block.tres",
+	"res://game/blocks/water blocks/water_quarter_flowing_block.tres",
+	"res://game/blocks/water blocks/water_source_block.tres",
+	"res://game/blocks/water blocks/water_three_quarter_block.tres",
+	"res://game/blocks/water blocks/water_three_quarter_flowing_block.tres",
+	"res://game/blocks/water_pod_block/water_pod_block.tres",
+]
+
+const STATIC_ITEM_PATHS: Array[String] = [
+	"res://game/items/clay/clay.tres",
+	"res://game/items/coal ore/coal_ore.tres",
+	"res://game/items/diamond ore/diamond_ore.tres",
+	"res://game/items/fish/fish.tres",
+	"res://game/items/fishing rod/fishing_rod.tres",
+	"res://game/items/gold ore/gold_ore.tres",
+	"res://game/items/grenade/grenade.tres",
+	"res://game/items/iron ingot/iron_ingot.tres",
+	"res://game/items/iron ore/iron_ore.tres",
+	"res://game/items/iron rod/iron_rod.tres",
+	"res://game/items/oxygen_pod/oxygen_pod.tres",
+	"res://game/items/pickaxe/pickaxe.tres",
+	"res://game/items/stone/stone.tres",
+	"res://game/items/stone slab/stone_slab.tres",
+	"res://game/items/sword/sword.tres",
+	"res://game/items/water_pod/water_pod.tres",
+]
+
+const STATIC_BLOCK_ENTITY_PATHS: Array[String] = [
+	"res://game/block entities/furnace/furnace.tres",
+]
+
+const STATIC_FURNACE_RECIPE_PATHS: Array[String] = [
+	"res://game/recipes/furnace/iron.tres",
+]
+
+const STATIC_CHARACTER_PATHS: Array[String] = [
+	"res://game/player/characters/El Classico/el_classico.tscn",
+]
+
+const STATIC_BUILTIN_SCENARIO_PATHS: Array[String] = [
+	"res://game/scenarios/built in/freeplay/freeplay.tscn",
+	"res://game/scenarios/built in/sandbox/sandbox.tscn",
+]
+
+const STATIC_SCENARIO_PATHS: Array[String] = [
+	"res://game/scenarios/iron ingot challenge/iron_ingot_challenge.tscn",
+]
+
 
 func _ready():
 	if Engine.is_editor_hint():
@@ -41,23 +121,36 @@ func _ready():
 	sound_library.build()
 	material_sound_library.build()
 
-	load_resource_folder_into_array(blocks_path, blocks, blocks_suffix)
-	
+	# Load blocks from static list (web-safe)
+	for path in STATIC_BLOCK_PATHS:
+		blocks.append(load(path))
+
 	for i in len(blocks):
 		blocks_lookup[blocks[i]]= i
 
+	# Load items from static list
+	for path in STATIC_ITEM_PATHS:
+		items.append(load(path))
 
-	load_resource_folder_into_array(items_path, items)
+	# Load block entities from static list
+	for path in STATIC_BLOCK_ENTITY_PATHS:
+		block_entities.append(load(path))
 
-	load_resource_folder_into_array(block_entities_path, block_entities)
+	# Load furnace recipes from static list
+	for path in STATIC_FURNACE_RECIPE_PATHS:
+		var item = load(path)
+		furnace_recipes[item.ingredient] = item
 
-	load_resource_folder_into_dictionary(furnace_recipe_path, furnace_recipes, "ingredient")
+	# Load characters from static list
+	for path in STATIC_CHARACTER_PATHS:
+		characters.append(load(path))
 
-	load_scenes_folder(characters_path, characters)
-	
-	load_scenes_folder(builtin_scenarios_path, builtin_scenarios)
+	# Load scenarios from static lists
+	for path in STATIC_BUILTIN_SCENARIO_PATHS:
+		builtin_scenarios.append(load(path))
 
-	load_scenes_folder(scenarios_path, scenarios, builtin_scenarios_path)
+	for path in STATIC_SCENARIO_PATHS:
+		scenarios.append(load(path))
 
 	late_ready.call_deferred()
 
@@ -65,38 +158,6 @@ func _ready():
 func late_ready():
 	WorldChunk.create_tileset()
 	fluid_library.build()
-
-
-func load_resource_folder_into_array(folder: String, array: Array, suffix: String= ".tres"):
-	for file in Utils.load_directory_recursively(folder):
-		if file.ends_with(suffix):
-			array.append(load(file))
-
-
-func load_resource_folder_into_dictionary(folder: String, dict: Dictionary, key: String):
-	folder+= "/"
-	var dir:= DirAccess.open(folder)
-	
-	for file in dir.get_files():
-		var item= load(folder + file)
-		assert(key in item)
-		dict[item.get(key)]= item
-
-
-func load_scenes_folder(folder: String, array: Array[PackedScene], exclude_path: String= ""):
-	folder+= "/"
-	var dir:= DirAccess.open(folder)
-	
-	for sub_dir_name in dir.get_directories():
-		var path: String= folder + sub_dir_name
-		if path == exclude_path: continue
-		
-		var sub_dir: DirAccess= DirAccess.open(path)
-		var scene_file_name: String= sub_dir_name.to_snake_case() + ".tscn"
-		if sub_dir.file_exists(scene_file_name):
-			array.append(load(path + "/" + scene_file_name))
-		else:
-			push_error("Can't find %s in %s" % [ scene_file_name, path])
 
 
 func find_furnace_recipe_for(ore: Item)-> FurnaceRecipe:

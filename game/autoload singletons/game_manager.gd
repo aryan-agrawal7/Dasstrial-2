@@ -1,6 +1,6 @@
 extends Node
 
-const RESOURCE_PATH= "res://local/game_start.res"
+const RESOURCE_PATH= "user://game_start.res"
 
 @export_group("Functionality moved to")
 @export_placeholder(RESOURCE_PATH) var _look_here: String
@@ -24,7 +24,7 @@ var game_scene_to_load: PackedScene
 
 ## Set your Google Maps API key here.
 ## Requires Places API and Maps Static API enabled in Google Cloud Console.
-const GOOGLE_API_KEY: String = "AIzaSyCSXKeE_7gAv4lNfGBVoOupdoQ0LlCCzIQ"
+const GOOGLE_API_KEY: String = ""
 
 var game_start_resource: GameStart
 
