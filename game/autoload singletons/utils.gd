@@ -66,13 +66,6 @@ static func find_custom_parent(child: Node, type)-> Node:
 	return find_custom_parent(child.get_parent(), type)
 
 
-static func make_ingredient_list(control: Control, ingredients: Array[InventoryItem]):
-	for ingredient in ingredients:
-		var label:= Label.new()
-		label.text= "%dx %s" % [ingredient.count, ingredient.item.get_display_name()]
-		control.add_child(label)
-
-
 static func get_time_string(time: float)-> String:
 	var time_int: int= int(time)
 	var seconds = time_int % 60

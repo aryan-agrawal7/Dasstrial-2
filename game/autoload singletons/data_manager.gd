@@ -7,7 +7,6 @@ const TILE_SET_PATH= "res://resources/tile_set.tres"
 @export var blocks_suffix: String
 @export_dir var items_path: String
 @export_dir var block_entities_path: String
-@export_dir var furnace_recipe_path: String
 @export var fluid_library: FluidLibrary
 
 @export_dir var scenarios_path
@@ -25,8 +24,6 @@ var blocks_lookup: Dictionary
 var block_entities: Array[BlockEntityDefinition]
 
 var items: Array[Item]
-
-var furnace_recipes: Dictionary
 
 var builtin_scenarios: Array[PackedScene]
 var scenarios: Array[PackedScene]
@@ -50,8 +47,6 @@ func _ready():
 	load_resource_folder_into_array(items_path, items)
 
 	load_resource_folder_into_array(block_entities_path, block_entities)
-
-	load_resource_folder_into_dictionary(furnace_recipe_path, furnace_recipes, "ingredient")
 
 	load_scenes_folder(characters_path, characters)
 	
@@ -97,12 +92,6 @@ func load_scenes_folder(folder: String, array: Array[PackedScene], exclude_path:
 			array.append(load(path + "/" + scene_file_name))
 		else:
 			push_error("Can't find %s in %s" % [ scene_file_name, path])
-
-
-func find_furnace_recipe_for(ore: Item)-> FurnaceRecipe:
-	if not furnace_recipes.has(ore):
-		return null
-	return furnace_recipes[ore]
 
 
 func get_block(id: int)-> Block:

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cja4g0evfsll1"
-path="res://.godot/imported/furnace_working.png-d43ba93036e680973973995a45ba04b2.ctex"
+uid="uid://dqwphwtvr4c8y"
+path="res://.godot/imported/LAVA.png-2d52d983a37d0f807f9e7a89d2991f13.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://game/block entities/furnace/furnace_working.png"
-dest_files=["res://.godot/imported/furnace_working.png-d43ba93036e680973973995a45ba04b2.ctex"]
+source_file="res://game/LAVA.png"
+dest_files=["res://.godot/imported/LAVA.png-2d52d983a37d0f807f9e7a89d2991f13.ctex"]
 
 [params]
 

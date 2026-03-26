@@ -16,7 +16,6 @@
 [ext_resource type="Script" uid="uid://dnlfd735y3q00" path="res://game/player/state machine/item_using_state.gd" id="16_cekgf"]
 [ext_resource type="Script" uid="uid://c3l64ys3l60nj" path="res://game/player/state machine/item_charging_state.gd" id="17_b3ibu"]
 [ext_resource type="Script" uid="uid://4p7f6nsmg5mc" path="res://game/player/state machine/dying_state.gd" id="18_xdhrf"]
-[ext_resource type="Script" uid="uid://bjlwl1dy2hjrd" path="res://game/player/state machine/building_state.gd" id="20_r6xgo"]
 [ext_resource type="Script" uid="uid://iu37ih36762h" path="res://game/player/vehicle_logic.gd" id="21_n56ys"]
 [ext_resource type="Script" uid="uid://dyuvq5ep8ar10" path="res://game/player/state machine/fishing_state.gd" id="22_mwsqf"]
 
@@ -30,6 +29,7 @@ height = 75.0
 
 [node name="Base Player" type="CharacterBody2D" unique_id=108499992]
 z_index = 10
+scale = Vector2(1.1, 1.1)
 collision_layer = 2
 collision_mask = 645
 script = ExtResource("1_lm5hc")
@@ -102,10 +102,6 @@ player = NodePath("../..")
 script = ExtResource("18_xdhrf")
 player = NodePath("../..")
 
-[node name="Building" type="Node" parent="State Machine" unique_id=1633538369 node_paths=PackedStringArray("player")]
-script = ExtResource("20_r6xgo")
-player = NodePath("../..")
-
 [node name="Fishing" type="Node" parent="State Machine" unique_id=1260609703]
 script = ExtResource("22_mwsqf")
 
@@ -115,7 +111,4 @@ script = ExtResource("22_mwsqf")
 [connection signal="stop_mining" from="State Machine/Mining" to="State Machine" method="_on_stop_mining"]
 [connection signal="stop_using_item" from="State Machine/Item Using" to="State Machine" method="_on_stop_using_item"]
 [connection signal="release_charge" from="State Machine/Item Charging" to="State Machine" method="release_charge"]
-[connection signal="build_block" from="State Machine/Building" to="State Machine" method="_on_place_block"]
-[connection signal="build_entity" from="State Machine/Building" to="State Machine" method="_on_building_build_entity"]
-[connection signal="cancel_build" from="State Machine/Building" to="State Machine" method="_on_building_cancel"]
 [connection signal="charge_item" from="State Machine/Fishing" to="State Machine" method="_on_charge_item"]
