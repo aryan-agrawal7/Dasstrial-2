@@ -3,17 +3,10 @@
 [ext_resource type="Script" path="res://game/blocks/artificial_block.gd" id="1_23gcm"]
 [ext_resource type="Resource" uid="uid://jkfdi3kaaiof" path="res://game/items/stone/stone.tres" id="1_ermyp"]
 [ext_resource type="Resource" uid="uid://boaaatfynuoc2" path="res://game/items/stone slab/stone_slab.tres" id="2_1i68k"]
-[ext_resource type="Script" path="res://game/player/inventory/inventory_item.gd" id="3_vk0dm"]
 [ext_resource type="Texture2D" uid="uid://bjbjl8vhp2qqm" path="res://game/blocks/smooth stone block/smooth_stone_block.png" id="5_tc07o"]
-
-[sub_resource type="Resource" id="Resource_u7n4x"]
-script = ExtResource("3_vk0dm")
-item = ExtResource("2_1i68k")
-count = 2
 
 [resource]
 script = ExtResource("1_23gcm")
-ingredients = Array[ExtResource("3_vk0dm")]([SubResource("Resource_u7n4x")])
 can_flip_horizontal = false
 can_flip_vertical = false
 can_rotate = false

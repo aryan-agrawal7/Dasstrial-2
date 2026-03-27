@@ -73,10 +73,5 @@ func on_physics_process(delta: float):
 		sound_interval.start()
 
 
-func _on_player_ui_hotbar_slot_changed():
-	if is_current_state():
-		stop_mining.emit()
-
-
 func on_selected_block_changed():
 	stop_mining.emit()

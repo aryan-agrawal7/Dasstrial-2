@@ -145,15 +145,6 @@ func _update_danger_vignette() -> void:
 		vignette_material.set_shader_parameter("intensity", 0.0)
 
 
-## Stub methods kept so other code doesn't crash if it still references them
-func update_hotbar():
-	pass
-
-
-func update_inventory():
-	_update_ore_display()
-
-
 func set_interaction_hint(text: String = "", pos: Vector2 = Vector2.ZERO):
 	interaction_hint.text = text
 	interaction_hint.visible = not text.is_empty()

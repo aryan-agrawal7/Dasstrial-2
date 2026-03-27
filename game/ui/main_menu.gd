@@ -160,8 +160,5 @@ func _on_play_button_pressed():
 	GameManager.location_lng = selected_location_lng
 	# Always use Freeplay (first built-in scenario)
 	GameManager.game_scene_to_load = DataManager.builtin_scenarios[0]
-	# Show zoom transition if location is selected and API key exists
-	if selected_location_lat != 0.0 and not GameManager.GOOGLE_API_KEY.is_empty():
-		get_tree().change_scene_to_file("res://game/ui/map_zoom_transition.tscn")
-	else:
-		GameManager.run_game(GameManager.game_scene_to_load)
+	
+	get_tree().change_scene_to_file("res://game/ui/intro_video.tscn")

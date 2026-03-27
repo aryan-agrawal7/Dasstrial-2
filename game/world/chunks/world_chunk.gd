@@ -10,6 +10,9 @@ const BACKGROUND_LAYER= 2
 
 # quasi const
 static var WHITE_TILE_SOURCE_ID: int
+static var LAVA_TILE_SOURCE_ID: int
+static var LAVA_TILE_W: int = 1
+static var LAVA_TILE_H: int = 1
 
 
 @export var coords: Vector2i
@@ -51,6 +54,22 @@ func generate_tiles():
 	
 	var positions: Array[Vector2i]= []
 	
+	# Set the background layer color depending on this chunk's depth
+	# We evaluate based on the vertical center of the chunk so it aligns better with the exact layer boundaries
+	var chunk_y = coords.y * SIZE + (SIZE / 2)
+	var bg_color = Color(0.3, 0.3, 0.3) # Default crust grey background
+	var bg_source_id = WHITE_TILE_SOURCE_ID
+	
+	if chunk_y >= 300 and chunk_y < 450:
+		bg_color = Color(0.15, 0.15, 0.15) # Mantle dark grey
+	elif chunk_y >= 450 and chunk_y < 600:
+		bg_color = Color.WHITE # Core now uses LAVA texture
+		bg_source_id = LAVA_TILE_SOURCE_ID
+	elif chunk_y >= 600 and chunk_y < 750:
+		bg_color = Color(0.15, 0.15, 0.15) # Mantle 2
+	elif chunk_y >= 750:
+		bg_color = Color(0.3, 0.3, 0.3) # Crust 2
+
 	for x in SIZE:
 		for y in SIZE:
 			var local_pos= Vector2i(x, y)
@@ -62,24 +81,11 @@ func generate_tiles():
 			set_block(block, local_pos, Block.State.NONE, false)
 			
 			if (block or generator.is_cave(global_pos)) and not block is FluidBlock:
-				set_cell(BACKGROUND_LAYER, local_pos, WHITE_TILE_SOURCE_ID, Vector2i.ZERO)
+				var atlas_pos = Vector2i.ZERO if bg_source_id == WHITE_TILE_SOURCE_ID else Vector2i(local_pos.x % LAVA_TILE_W, local_pos.y % LAVA_TILE_H)
+				set_cell(BACKGROUND_LAYER, local_pos, bg_source_id, atlas_pos)
 
 	for pos in positions:
 		get_block(pos).on_chunk_generated(world, pos)
-
-	# Set the background layer color depending on this chunk's depth
-	# We evaluate based on the vertical center of the chunk so it aligns better with the exact layer boundaries
-	var chunk_y = coords.y * SIZE + (SIZE / 2)
-	var bg_color = Color(0.3, 0.3, 0.3) # Default crust grey background
-	
-	if chunk_y >= 300 and chunk_y < 450:
-		bg_color = Color(0.15, 0.15, 0.15) # Mantle dark grey
-	elif chunk_y >= 450 and chunk_y < 600:
-		bg_color = Color(0.5, 0.1, 0.05) # Core dull red
-	elif chunk_y >= 600 and chunk_y < 750:
-		bg_color = Color(0.15, 0.15, 0.15) # Mantle 2
-	elif chunk_y >= 750:
-		bg_color = Color(0.3, 0.3, 0.3) # Crust 2
 		
 	set_layer_modulate(BACKGROUND_LAYER, bg_color)
 
@@ -223,21 +229,24 @@ func restore(storage: ChunkStorage):
 				alternative_tile= storage.alternative_tiles[tile_pos]
 			set_block(DataManager.get_block(tiles.pop_front()), tile_pos, Block.get_state_from_alt(alternative_tile), false)
 	
-	for tile in storage.cave:
-		set_cell(BACKGROUND_LAYER, tile, WHITE_TILE_SOURCE_ID, Vector2i.ZERO)
-		
 	# Re-apply background layer tint on restore
 	var chunk_y = coords.y * SIZE + (SIZE / 2)
 	var bg_color = Color(0.3, 0.3, 0.3)
+	var bg_source_id = WHITE_TILE_SOURCE_ID
 	
 	if chunk_y >= 300 and chunk_y < 450:
 		bg_color = Color(0.15, 0.15, 0.15)
 	elif chunk_y >= 450 and chunk_y < 600:
-		bg_color = Color(0.5, 0.1, 0.0)
+		bg_color = Color.WHITE
+		bg_source_id = LAVA_TILE_SOURCE_ID
 	elif chunk_y >= 600 and chunk_y < 750:
 		bg_color = Color(0.15, 0.15, 0.15)
 	elif chunk_y >= 750:
 		bg_color = Color(0.3, 0.3, 0.3)
+
+	for tile in storage.cave:
+		var atlas_pos = Vector2i.ZERO if bg_source_id == WHITE_TILE_SOURCE_ID else Vector2i(tile.x % LAVA_TILE_W, tile.y % LAVA_TILE_H)
+		set_cell(BACKGROUND_LAYER, tile, bg_source_id, atlas_pos)
 		
 	set_layer_modulate(BACKGROUND_LAYER, bg_color)
 	
@@ -277,7 +286,7 @@ static func create_tileset():
 
 	for block in DataManager.blocks:
 		var source:= TileSetAtlasSource.new()
-		if not block.is_air:
+		if block and not block.is_air:
 			source.texture_region_size= Vector2i.ONE * World.TILE_SIZE
 			source.texture= block.get_atlas_texture()
 			source.create_tile(Vector2i.ZERO)
@@ -285,7 +294,7 @@ static func create_tileset():
 			
 		DataManager.tile_set.add_source(source)
 		
-		if block.has_collision:
+		if block and block.has_collision:
 			var tile_data: TileData= source.get_tile_data(Vector2i.ZERO, 0)
 			tile_data.add_collision_polygon(0)
 			var polygon: PackedVector2Array= block.custom_collision_polygon if block.custom_collision_polygon else collision_polygon
@@ -300,5 +309,21 @@ static func create_tileset():
 	source.create_tile(Vector2i.ZERO)
 	DataManager.tile_set.add_source(source)
 	WHITE_TILE_SOURCE_ID= len(DataManager.blocks)
+
+	# Add lava tile
+	var lava_source:= TileSetAtlasSource.new()
+	lava_source.texture_region_size= Vector2i.ONE * World.TILE_SIZE
+	var lava_tex: Texture2D = load("res://game/LAVA.png")
+	if lava_tex:
+		lava_source.texture = lava_tex
+		var w = int(lava_tex.get_width() / World.TILE_SIZE)
+		var h = int(lava_tex.get_height() / World.TILE_SIZE)
+		LAVA_TILE_W = max(1, w)
+		LAVA_TILE_H = max(1, h)
+		for x in LAVA_TILE_W:
+			for y in LAVA_TILE_H:
+				lava_source.create_tile(Vector2i(x, y))
+		DataManager.tile_set.add_source(lava_source)
+		LAVA_TILE_SOURCE_ID = len(DataManager.blocks) + 1
 
 	ResourceSaver.save(DataManager.tile_set, DataManager.TILE_SET_PATH)
