@@ -3,6 +3,9 @@
 class_name UI
 extends CanvasLayer
 
+const PLAYER_HURT_SFX: AudioStream = preload("res://game/audio/sounds/player_hurt.ogg")
+const HURT_SFX_BOOST_DB: float = 6.0206
+
 
 @export var health: HealthComponent
 
@@ -30,10 +33,17 @@ var _left_btn: Button
 var _right_btn: Button
 var _upgrade_btn: Button
 
+## Hurt sound sync state (tracks pulse + recent health loss)
+var _last_health: float = 0.0
+var _recent_damage_timer: float = 0.0
+var _hurt_sound_cooldown: float = 0.0
+var _pulse_peak_armed: bool = true
+
 
 func _ready():
 	assert(player)
 	assert(health)
+	_last_health = health.hitpoints
 
 	# Build the red vignette overlay (full-screen, above everything)
 	_build_danger_vignette()
@@ -48,10 +58,22 @@ func _ready():
 	call_deferred("_connect_ore_counter")
 
 
-func _process(_delta):
+func _process(delta):
 	update_health()
 	update_subsystems()
-	_update_danger_vignette()
+	_track_recent_health_loss(delta)
+	_update_danger_vignette(delta)
+
+
+func _track_recent_health_loss(delta: float) -> void:
+	_hurt_sound_cooldown = max(0.0, _hurt_sound_cooldown - delta)
+
+	if health.hitpoints < _last_health - 0.001:
+		_recent_damage_timer = 0.45
+	else:
+		_recent_damage_timer = max(0.0, _recent_damage_timer - delta)
+
+	_last_health = health.hitpoints
 
 
 func _connect_ore_counter():
@@ -126,7 +148,7 @@ func _build_danger_vignette() -> void:
 	add_child(danger_vignette)
 
 
-func _update_danger_vignette() -> void:
+func _update_danger_vignette(_delta: float) -> void:
 	# Check all 4 metrics — flash if ANY is below 10%
 	var health_pct: float = (health.hitpoints / health.max_hitpoints) * 100.0
 	var temp_pct: float = (player.hull_temp / player.max_hull_temp) * 100.0 if player.max_hull_temp > 0 else 100.0
@@ -141,8 +163,26 @@ func _update_danger_vignette() -> void:
 		var pulse := (sin(Time.get_ticks_msec() / 300.0) + 1.0) / 2.0
 		var target_intensity := lerpf(0.3, 0.7, pulse) * (0.5 + 0.5 * severity)
 		vignette_material.set_shader_parameter("intensity", target_intensity)
+
+		# Sync hurt sound to pulse peaks, but only while health is currently draining.
+		if pulse > 0.96 and _pulse_peak_armed:
+			_pulse_peak_armed = false
+			if _recent_damage_timer > 0.0:
+				_play_hurt_sound()
+		elif pulse < 0.55:
+			_pulse_peak_armed = true
 	else:
 		vignette_material.set_shader_parameter("intensity", 0.0)
+		_pulse_peak_armed = true
+
+
+func _play_hurt_sound() -> void:
+	if _hurt_sound_cooldown > 0.0:
+		return
+
+	if is_instance_valid(SoundPlayer) and SoundPlayer.has_method("play_stream"):
+		SoundPlayer.play_stream(PLAYER_HURT_SFX, HURT_SFX_BOOST_DB)
+		_hurt_sound_cooldown = 0.18
 
 
 func set_interaction_hint(text: String = "", pos: Vector2 = Vector2.ZERO):

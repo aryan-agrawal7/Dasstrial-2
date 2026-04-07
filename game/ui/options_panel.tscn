@@ -10,8 +10,8 @@ size_flags_horizontal = 10
 theme_override_styles/panel = SubResource("StyleBoxFlat_u7nqw")
 
 [node name="User Settings" parent="." node_paths=PackedStringArray("controls") instance=ExtResource("1_oyury")]
-settings = Array[String](["volume", "fullscreen"])
-controls = [NodePath("../MarginContainer/VBoxContainer/Volume HBoxContainer/Volume HSlider"), NodePath("../MarginContainer/VBoxContainer/Fullscreen HBoxContainer2/Fullscreen CheckBox")]
+settings = Array[String](["master_volume", "bgm_volume", "sfx_volume", "fullscreen"])
+controls = [NodePath("../MarginContainer/VBoxContainer/Master Volume HBoxContainer/Master Volume HSlider"), NodePath("../MarginContainer/VBoxContainer/Music Volume HBoxContainer/Music Volume HSlider"), NodePath("../MarginContainer/VBoxContainer/SFX Volume HBoxContainer/SFX Volume HSlider"), NodePath("../MarginContainer/VBoxContainer/Fullscreen HBoxContainer2/Fullscreen CheckBox")]
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -24,17 +24,47 @@ theme_override_constants/margin_bottom = 15
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Volume HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="Master Volume HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 50
 
-[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Volume HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Master Volume HBoxContainer"]
 layout_mode = 2
-text = "Volume"
+text = "Master"
 
-[node name="Volume HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Volume HBoxContainer"]
+[node name="Master Volume HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Master Volume HBoxContainer"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+max_value = 100.0
+step = 1.0
+
+[node name="Music Volume HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/Music Volume HBoxContainer"]
+layout_mode = 2
+text = "Music"
+
+[node name="Music Volume HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/Music Volume HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+max_value = 100.0
+step = 1.0
+
+[node name="SFX Volume HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 50
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/SFX Volume HBoxContainer"]
+layout_mode = 2
+text = "SFX"
+
+[node name="SFX Volume HSlider" type="HSlider" parent="MarginContainer/VBoxContainer/SFX Volume HBoxContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+max_value = 100.0
+step = 1.0
 
 [node name="Fullscreen HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2

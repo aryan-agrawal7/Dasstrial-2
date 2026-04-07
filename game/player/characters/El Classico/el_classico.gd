@@ -92,7 +92,7 @@ func on_stop_mining():
 
 
 func _on_health_component_report_damage(_damage: Damage, _hitpoints: float):
-	$"AudioStreamPlayer Hurt".play()
+	pass
 
 
 func _on_vehicle_state_entered():
