@@ -3,6 +3,9 @@ extends Node
 
 signal game_is_over
 
+const RESPAWN_DEATH_SFX: AudioStream = preload("res://game/audio/sounds/death_respawn.ogg")
+const RESPAWN_DEATH_SFX_BOOST_DB: float = 6.0206
+
 @export var world: World
 @export var settings: GameSettings
 @export var cheats: Cheats
@@ -87,6 +90,13 @@ func spawn_player():
 func respawn():
 	if is_inside_tree():
 		spawn_player.call_deferred()
+
+
+func on_player_death_for_respawn():
+	# Intentionally for deaths that will respawn.
+	# Keep separate so future game-over death can use a different sound.
+	if settings and settings.respawn_on_death and is_instance_valid(SoundPlayer) and SoundPlayer.has_method("play_stream"):
+		SoundPlayer.play_stream(RESPAWN_DEATH_SFX, RESPAWN_DEATH_SFX_BOOST_DB)
 
 
 func on_player_spawned():

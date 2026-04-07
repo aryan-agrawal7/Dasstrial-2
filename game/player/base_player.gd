@@ -6,6 +6,7 @@ signal break_block(block: Block)
 
 const FLY_SPEED_FACTOR= 4.0
 const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
+const DIG_SFX: AudioStream = preload("res://game/audio/sounds/dig_block.ogg")
 
 @export_category("Movement")
 @export var speed: float = 200.0
@@ -19,6 +20,8 @@ const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
 @export var auto_mine_interval: float = 0.12
 ## If true, player constantly digs downward and cannot stop
 @export var auto_mine_enabled: bool = true
+## Internal mining speed multiplier. 3.0 = 300% speed.
+@export var mining_speed_multiplier: float = 3.0
 
 @export_category("Health")
 @export var fall_damage_speed: float= 600
@@ -26,6 +29,10 @@ const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
 
 @export_category("Misc")
 @export var freeze: bool= false
+
+@export_category("Audio")
+@export var dig_sound_min_interval: float = 0.06
+@export var dig_sound_volume_boost_db: float = 4.0
 
 @export_category("Components")
 @export var body: Node2D
@@ -87,6 +94,7 @@ var in_vehicle: Vehicle
 var auto_mine_timer: float = 0.0
 ## Tracks last horizontal input direction for auto-mining
 var auto_mine_direction: int = 0
+var dig_sound_cooldown: float = 0.0
 
 ## Fog variables
 var t_menu: TMenu
@@ -179,6 +187,8 @@ func _apply_visibility_scale(animate: bool = true):
 
 func _physics_process(delta):
 	if freeze: return
+
+	dig_sound_cooldown = max(0.0, dig_sound_cooldown - delta)
 
 	if in_vehicle:
 		vehicle_logic.on_physics_process(delta)
@@ -324,6 +334,7 @@ func auto_mine(delta: float):
 	# Drill gets slower as sharpness decreases (up to 3x slower at zero sharpness)
 	var sharpness_ratio: float = drill_sharpness / max_sharpness if max_sharpness > 0 else 0.0
 	var effective_interval: float = auto_mine_interval * (1.0 + (1.0 - sharpness_ratio) * 2.0)
+	effective_interval /= max(mining_speed_multiplier, 0.01)
 	if auto_mine_timer < effective_interval:
 		return
 	auto_mine_timer = 0.0
@@ -359,6 +370,18 @@ func try_auto_mine_block(world: World, pos: Vector2i):
 		# Break the block without spawning world items (with_drops = false)
 		world.break_block(pos, false)
 		break_block.emit(block)
+		_play_dig_sound()
+
+
+func _play_dig_sound():
+	if dig_sound_cooldown > 0.0:
+		return
+
+	if not (is_instance_valid(SoundPlayer) and SoundPlayer.has_method("play_stream")):
+		return
+
+	SoundPlayer.play_stream(DIG_SFX, dig_sound_volume_boost_db)
+	dig_sound_cooldown = dig_sound_min_interval
 
 func fly(_delta: float):
 	var direction: Vector2= Input.get_vector("left", "right", "up", "down")
@@ -443,6 +466,8 @@ func get_tile_distance(tile: Vector2i)-> int:
 
 
 func die():
+	if is_instance_valid(Global.game) and Global.game.has_method("on_player_death_for_respawn"):
+		Global.game.on_player_death_for_respawn()
 	state_machine.change_state(state_machine.dying_state)
 	on_death()
 
@@ -530,7 +555,7 @@ func on_hand_action_finished():
 
 
 func play_hand_item_sound(_target_material: MaterialSoundLibrary.Type):
-	pass
+	_play_dig_sound()
 	
 func _unhandled_input(event: InputEvent):
 	if freeze: return

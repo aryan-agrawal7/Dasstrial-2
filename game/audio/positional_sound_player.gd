@@ -2,11 +2,13 @@ extends BaseSoundPlayer
 
 
 var stream_players: Array[AudioStreamPlayer2D]
+var sfx_volume_db: float = 0.0
 
 
 
 func _ready():
 	stream_players.assign(get_children())
+	_apply_saved_sfx_volume()
 
 
 func play(sound_key: String, position: Vector2):
@@ -22,7 +24,20 @@ func play_sound(sound: AudioStream, position):
 	if player:
 		player.stream= sound
 		player.position= position
+		player.volume_db = sfx_volume_db
 		player.play()
+
+
+func set_sfx_volume_percent(percent: float):
+	var linear: float = clamp(percent / 100.0, 0.0001, 2.0)
+	sfx_volume_db = linear_to_db(linear)
+
+
+func _apply_saved_sfx_volume():
+	var user_config = get_node_or_null("/root/UserConfig")
+	if user_config and user_config.has_method("get_setting"):
+		if user_config.config_file.has_section_key("Settings", "sfx_volume"):
+			set_sfx_volume_percent(float(user_config.get_setting("sfx_volume")))
 
 
 func play_material_sound(mat_type1: MaterialSoundLibrary.Type, mat_type2: MaterialSoundLibrary.Type, position: Vector2):
