@@ -28,10 +28,80 @@ var ore_labels: Dictionary = {}
 var danger_vignette: ColorRect
 var vignette_material: ShaderMaterial
 
-## Touch control buttons
-var _left_btn: Button
-var _right_btn: Button
+## Touch control button textures (pixel art)
+const LEFT_BTN_TEX: Texture2D = preload("res://game/ui/btn_left.png")
+const RIGHT_BTN_TEX: Texture2D = preload("res://game/ui/btn_right.png")
+
+## Touch control button node references
+var _left_btn: TextureButton
+var _right_btn: TextureButton
 var _upgrade_btn: Button
+
+func _build_touch_controls():
+	var btn_size := Vector2(110, 110)
+	var margin := 20
+
+	# — Left button (bottom-left) —
+	_left_btn = TextureButton.new()
+	_left_btn.texture_normal = LEFT_BTN_TEX
+	_left_btn.texture_pressed = LEFT_BTN_TEX
+	_left_btn.texture_hover = LEFT_BTN_TEX
+	_left_btn.modulate_on_hover = false
+	_left_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_left_btn.custom_minimum_size = btn_size
+	_left_btn.anchor_left = 0.0
+	_left_btn.anchor_top = 1.0
+	_left_btn.anchor_right = 0.0
+	_left_btn.anchor_bottom = 1.0
+	_left_btn.offset_left = margin
+	_left_btn.offset_top = -(btn_size.y + margin)
+	_left_btn.offset_right = margin + btn_size.x
+	_left_btn.offset_bottom = -margin
+	_left_btn.button_down.connect(_on_left_pressed)
+	_left_btn.button_up.connect(_on_left_released)
+	_left_btn.button_down.connect(func(): _left_btn.modulate = Color(0.6, 0.6, 0.6, 1.0))
+	_left_btn.button_up.connect(func(): _left_btn.modulate = Color.WHITE)
+	add_child(_left_btn)
+
+	# — Right button (bottom-right) —
+	_right_btn = TextureButton.new()
+	_right_btn.texture_normal = RIGHT_BTN_TEX
+	_right_btn.texture_pressed = RIGHT_BTN_TEX
+	_right_btn.texture_hover = RIGHT_BTN_TEX
+	_right_btn.modulate_on_hover = false
+	_right_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_right_btn.custom_minimum_size = btn_size
+	_right_btn.anchor_left = 1.0
+	_right_btn.anchor_top = 1.0
+	_right_btn.anchor_right = 1.0
+	_right_btn.anchor_bottom = 1.0
+	_right_btn.offset_left = -(btn_size.x + margin)
+	_right_btn.offset_top = -(btn_size.y + margin)
+	_right_btn.offset_right = -margin
+	_right_btn.offset_bottom = -margin
+	_right_btn.button_down.connect(_on_right_pressed)
+	_right_btn.button_up.connect(_on_right_released)
+	_right_btn.button_down.connect(func(): _right_btn.modulate = Color(0.6, 0.6, 0.6, 1.0))
+	_right_btn.button_up.connect(func(): _right_btn.modulate = Color.WHITE)
+	add_child(_right_btn)
+
+	# — Upgrade button (top-right, below ore panel) — unchanged —
+	_upgrade_btn = Button.new()
+	_upgrade_btn.text = "⬆ Upgrade"
+	_upgrade_btn.custom_minimum_size = Vector2(120, 50)
+	_upgrade_btn.anchor_left = 1.0
+	_upgrade_btn.anchor_top = 0.0
+	_upgrade_btn.anchor_right = 1.0
+	_upgrade_btn.anchor_bottom = 0.0
+	_upgrade_btn.offset_left = -140
+	_upgrade_btn.offset_top = 260
+	_upgrade_btn.offset_right = -20
+	_upgrade_btn.offset_bottom = 310
+	_upgrade_btn.add_theme_font_size_override("font_size", 18)
+	_style_touch_button(_upgrade_btn, Color(0.5, 0.35, 0.1, 0.75))
+	_upgrade_btn.pressed.connect(_on_upgrade_pressed)
+	add_child(_upgrade_btn)
+
 
 ## Hurt sound sync state (tracks pulse + recent health loss)
 var _last_health: float = 0.0
