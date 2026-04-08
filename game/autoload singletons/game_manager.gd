@@ -21,6 +21,8 @@ var location_name: String = ""
 var location_lat: float = 0.0
 var location_lng: float = 0.0
 var game_scene_to_load: PackedScene
+## 0=EASY, 1=HARD, 2=HELL — matches GameSettings.Difficulty enum
+var selected_difficulty: int = 0
 
 ## Set your Google Maps API key here.
 ## Requires Places API and Maps Static API enabled in Google Cloud Console.
