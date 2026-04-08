@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TrapBlock" load_steps=3 format=3 uid="uid://ftrap22gold02"]
+
+[ext_resource type="Script" path="res://game/blocks/trap_block.gd" id="1_trap"]
+[ext_resource type="Texture2D" uid="uid://mn6cy6craf22" path="res://game/blocks/gold block/gold.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_trap")
+trap_type = 1
+damage_value = 35.0
+trigger_delay = 0.0
+name = "fools_gold"
+texture = ExtResource("2_tex")
+hardness = 1.0
+has_collision = true
+particle_color = Color(0.9, 0.2, 0.1, 1)
+is_air = false

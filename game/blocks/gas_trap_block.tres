@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TrapBlock" load_steps=3 format=3 uid="uid://gtrap11gas001"]
+
+[ext_resource type="Script" path="res://game/blocks/trap_block.gd" id="1_trap"]
+[ext_resource type="Texture2D" uid="uid://dc3wjicuyfidk" path="res://game/blocks/stone block/stone.png" id="2_tex"]
+
+[resource]
+script = ExtResource("1_trap")
+trap_type = 0
+damage_value = 50.0
+trigger_delay = 0.5
+texture = ExtResource("2_tex")
+hardness = 0.5
+has_collision = true
+particle_color = Color(0.2, 0.8, 0.2, 1)
+is_air = false
+name = "volatile_gas"

@@ -370,6 +370,8 @@ func try_auto_mine_block(world: World, pos: Vector2i):
 		# Break the block without spawning world items (with_drops = false)
 		world.break_block(pos, false)
 		break_block.emit(block)
+		if block.has_method("on_mined"):
+			block.on_mined(world, pos, self)
 		_play_dig_sound()
 
 
