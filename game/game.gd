@@ -158,4 +158,3 @@ func on_player_death_for_respawn():
 
 func game_over(win: bool):
 	game_is_over.emit(win)
-
