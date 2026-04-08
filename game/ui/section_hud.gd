@@ -19,7 +19,7 @@ const BOTTOM_LIMIT: float = 1050.0
 const SECTION_BOUNDARIES: Array = [
 	{"name": "C",  "fraction": 0.0,   "color": Color(0.55, 0.35, 0.17)},  # Crust start
 	{"name": "M",  "fraction": 300.0/1050.0,  "color": Color(1.0, 0.45, 0.15)},  # Mantle
-	{"name": "K",  "fraction": 450.0/1050.0,  "color": Color(0.9, 0.15, 0.1)},   # Core
+	{"name": "Core",  "fraction": 450.0/1050.0,  "color": Color(0.9, 0.15, 0.1)},   # Core
 	{"name": "M2", "fraction": 600.0/1050.0,  "color": Color(1.0, 0.45, 0.15)},  # Mantle-2
 	{"name": "C2", "fraction": 750.0/1050.0,  "color": Color(0.55, 0.35, 0.17)}, # Crust-2
 ]
@@ -169,6 +169,13 @@ func _on_section_changed(_old_section: String, new_section: String):
 
 	section_label.text = _get_section_icon(new_section) + "  " + new_section.to_upper()
 	section_label.add_theme_color_override("font_color", color)
+
+	# Snap a screenshot at every section crossing (used for the win screen stash).
+	# Defer by one frame so the section-title card is visible in the image.
+	get_tree().process_frame.connect(
+		func(): GameManager.capture_screenshot(),
+		CONNECT_ONE_SHOT
+	)
 
 	# Dramatic fade-in → hold → fade-out for the small panel
 	if display_tween and display_tween.is_running():

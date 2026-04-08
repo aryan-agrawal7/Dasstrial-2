@@ -121,6 +121,7 @@ func _on_player_died():
 				if is_inside_tree():
 					spawn_player.call_deferred()
 			else:
+				# Out of lives — show game over
 				game_over(false)
 
 		GameSettings.Difficulty.HELL:
@@ -142,6 +143,15 @@ func on_player_spawned():
 				player.ore_counter.counts[ore_name] = _saved_ore_counts[ore_name]
 		player.ore_counter.updated.emit()
 		_saved_ore_counts.clear()
+
+	# Capture an initial screenshot the first time the player spawns
+	# (guarantees at least one image in the stash even if the player dies immediately)
+	if GameManager.game_screenshots.is_empty():
+		# Defer by one frame so the world has rendered at least once
+		get_tree().process_frame.connect(
+			func(): GameManager.capture_screenshot(),
+			CONNECT_ONE_SHOT
+		)
 
 
 func respawn():

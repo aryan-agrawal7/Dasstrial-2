@@ -10,7 +10,12 @@ const RESOURCE_PATH= "res://local/game_start.res"
 
 
 @onready var game_over_container = $"Game Over CenterContainer"
-@onready var game_over_label = %"Game Over Label"
+@onready var game_over_label: Label = %"Game Over Label"
+@onready var run_time_label: Label = %"RunTimeLabel"
+@onready var screenshot_rect: TextureRect = %"ScreenshotRect"
+@onready var screenshot_caption: Label = %"ScreenshotCaption"
+@onready var play_again_button: Button = %"PlayAgainButton"
+@onready var main_menu_button: Button = %"MainMenuButton"
 
 
 var game: Game
@@ -40,6 +45,12 @@ var ore_spawn_bonus: float = 0.0
 ## Stores final run time so the antipode screen can display it
 var final_run_time: float = 0.0
 
+## Screenshot stash: Images captured at spawn and each section crossing for the win screen.
+## The death screenshot is always stored last when game_over(false) is called.
+var game_screenshots: Array[Image] = []
+var _death_screenshot: Image = null
+var _is_win: bool = false
+
 
 func init():
 	if not ResourceLoader.exists(RESOURCE_PATH):
@@ -67,7 +78,65 @@ func run_game(scene: PackedScene):
 func run_deferred(scene: PackedScene):
 	_game_over_triggered = false
 	ore_spawn_bonus = 0.0
+	game_screenshots.clear()
+	_death_screenshot = null
+	_is_win = false
 	assert(get_tree().change_scene_to_packed(scene) == OK)
+
+
+## Capture a screenshot and stash it in game_screenshots.
+## Hides timer, ore panel, touch controls, and lives display so only gauges
+## and the depth progress bar appear in the image.
+func capture_screenshot() -> void:
+	var vp := get_viewport()
+	if vp == null:
+		return
+
+	# Collect UI nodes to hide
+	var hidden_nodes: Array[CanvasItem] = []
+
+	# Timer (autoload CanvasLayer)
+	if is_instance_valid(GameTimer):
+		hidden_nodes.append(GameTimer)
+
+	# Player UI sub-elements
+	var player_ui: UI = null
+	if Global.game and Global.game.player:
+		player_ui = Global.game.player.get_node_or_null("Player UI") as UI
+	if player_ui:
+		# Ore Panel (the MarginContainer holding ore counts)
+		var ore_panel := player_ui.get_node_or_null("Ore Panel")
+		if ore_panel:
+			hidden_nodes.append(ore_panel)
+		# Touch buttons
+		if player_ui._left_btn:
+			hidden_nodes.append(player_ui._left_btn)
+		if player_ui._right_btn:
+			hidden_nodes.append(player_ui._right_btn)
+		if player_ui._upgrade_btn:
+			hidden_nodes.append(player_ui._upgrade_btn)
+		# Lives display
+		if player_ui._lives_container:
+			hidden_nodes.append(player_ui._lives_container)
+
+	# Store original visibility and hide
+	var was_visible: Array[bool] = []
+	for node in hidden_nodes:
+		was_visible.append(node.visible)
+		node.visible = false
+
+	# Wait one frame so the viewport renders without hidden elements
+	await get_tree().process_frame
+
+	# Capture
+	var img: Image = vp.get_texture().get_image()
+	if img and not img.is_empty():
+		game_screenshots.append(img)
+
+	# Restore visibility
+	for i in range(hidden_nodes.size()):
+		hidden_nodes[i].visible = was_visible[i]
+
 
 
 func game_over(win: bool):
@@ -75,31 +144,78 @@ func game_over(win: bool):
 	if _game_over_triggered:
 		return
 	_game_over_triggered = true
+	_is_win = win
 
-	# Save the final run time before stopping the timer
 	final_run_time = GameTimer.elapsed_time
 	GameTimer.stop_timer()
 
-	# Pause the world FIRST to stop background chunk generator threads from crashing.
-	get_tree().paused = true
-
-	# If the player won and a location was selected, show the antipode animation.
-	# The antipode scene will unpause immediately in its own _ready().
-	if win and location_lat != 0.0 and not GOOGLE_API_KEY.is_empty():
-		get_tree().change_scene_to_file.call_deferred("res://game/ui/antipode_zoom_transition.tscn")
+	if win:
+		# For wins: freeze the world but let the antipode animation run.
+		# antipode_zoom_transition.gd will call show_win_popup() when it's done.
+		get_tree().paused = true
+		if location_lat != 0.0 and not GOOGLE_API_KEY.is_empty():
+			get_tree().change_scene_to_file.call_deferred("res://game/ui/antipode_zoom_transition.tscn")
+		else:
+			# No map — show win popup straight away
+			show_win_popup()
 		return
 
-	game_over_label.text = "You won!!!" if win else "You lost :("
+	# --- Loss ---
+	# Take the death screenshot on the exact frame of death, before pausing
+	capture_screenshot()
+	if game_screenshots.size() > 0:
+		_death_screenshot = game_screenshots.back()
+
+	get_tree().paused = true
+
+	_show_popup(false)
+
+
+## Called by antipode_zoom_transition.gd after its animation finishes.
+func show_win_popup() -> void:
+	get_tree().paused = true
+	_show_popup(true)
+
+
+## Internal: builds and reveals the popup for either win or loss.
+func _show_popup(win: bool) -> void:
+	# Format run time
+	var t: float = final_run_time
+	var mins := int(t) / 60
+	var secs := int(t) % 60
+	var ms := int((t - int(t)) * 100)
+	run_time_label.text = "TIME   %02d:%02d:%02d" % [mins, secs, ms]
+
+	var img: Image
+	if win:
+		game_over_label.text = "MISSION COMPLETE"
+		game_over_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.1, 1.0))
+		img = _pick_random_screenshot()
+	else:
+		game_over_label.text = "YOU DIED"
+		game_over_label.add_theme_color_override("font_color", Color(0.9, 0.15, 0.1, 1.0))
+		img = _death_screenshot
+		screenshot_caption.text = "moment of death"
+
+	if img and not img.is_empty():
+		screenshot_rect.texture = ImageTexture.create_from_image(img)
+	else:
+		screenshot_rect.texture = null
+
 	game_over_container.show()
-	
-	# Auto-exit cleanly after 2 seconds (timer runs while paused via process_always=true)
-	await get_tree().create_timer(2.0, true, false, true).timeout
-	load_main_menu()
 
 
-func _on_try_again_button_pressed():
+## Returns a random Image from the stash, or null if empty.
+func _pick_random_screenshot() -> Image:
+	if game_screenshots.is_empty():
+		return null
+	return game_screenshots[randi() % game_screenshots.size()]
+
+
+func _on_play_again_button_pressed():
 	game_over_container.hide()
-	get_tree().reload_current_scene.call_deferred()
+	get_tree().paused = false
+	run_game(game_scene_to_load)
 
 
 func _on_exit_button_pressed():
