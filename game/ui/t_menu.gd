@@ -1,6 +1,9 @@
 class_name TMenu
 extends CanvasLayer
 
+const UPGRADE_SFX: AudioStream = preload("res://game/audio/sounds/upgrade.ogg")
+const UPGRADE_SFX_BOOST_DB: float = 4.0
+
 ## Pixel-art ship maintenance menu with 5 upgrade slots.
 ## Layout: T-menu.png background (512px) with 5 columns of
 ## [upgrade arrow] → [icon] → [cost label].
@@ -209,8 +212,14 @@ func _on_upgrade_pressed(index: int):
 	if upg.can_use.call():
 		var btn := _upgrade_btns[index]
 		_play_click_anim(btn)
+		_play_upgrade_sfx()
 		upg.action.call()
 		_update_buttons()
+
+
+func _play_upgrade_sfx():
+	if is_instance_valid(SoundPlayer) and SoundPlayer.has_method("play_stream"):
+		SoundPlayer.play_stream(UPGRADE_SFX, UPGRADE_SFX_BOOST_DB)
 
 
 func _play_click_anim(btn: TextureButton):
@@ -240,4 +249,5 @@ func _on_gold_pressed():
 	if player.ore_counter.get_count_by_name("gold_ore") >= 5:
 		player.ore_counter.consume_raw("gold_ore", 5)
 		GameManager.ore_spawn_bonus = min(GameManager.ore_spawn_bonus + 0.03, 0.15)
+		_play_upgrade_sfx()
 		_update_buttons()
