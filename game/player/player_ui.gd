@@ -6,9 +6,9 @@ extends CanvasLayer
 const PLAYER_HURT_SFX: AudioStream = preload("res://game/audio/sounds/player_hurt.ogg")
 const HURT_SFX_BOOST_DB: float = 6.0206
 
-## Touch control button textures (pixel art)
-const LEFT_BTN_TEX: Texture2D = preload("res://game/ui/btn_left.png")
-const RIGHT_BTN_TEX: Texture2D = preload("res://game/ui/btn_right.png")
+## Touch control button texture paths (pixel art)
+const LEFT_BTN_PATH: String = "res://game/ui/btn_left.png"
+const RIGHT_BTN_PATH: String = "res://game/ui/btn_right.png"
 
 
 @export var health: HealthComponent
@@ -206,12 +206,28 @@ func _build_touch_controls():
 	var btn_size := Vector2(110, 110)
 	var margin := 20
 
-	# — Left button (bottom-left): pixel art TextureButton —
+	# Load pixel art textures at runtime (requires editor import pass first)
+	var left_tex: Texture2D = null
+	var right_tex: Texture2D = null
+	if ResourceLoader.exists(LEFT_BTN_PATH):
+		left_tex = load(LEFT_BTN_PATH)
+	if ResourceLoader.exists(RIGHT_BTN_PATH):
+		right_tex = load(RIGHT_BTN_PATH)
+
+	# — Left button (bottom-left) —
 	_left_btn = TextureButton.new()
-	_left_btn.texture_normal = LEFT_BTN_TEX
-	_left_btn.texture_pressed = LEFT_BTN_TEX
-	_left_btn.texture_hover = LEFT_BTN_TEX
-	_left_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	if left_tex:
+		_left_btn.texture_normal = left_tex
+		_left_btn.texture_pressed = left_tex
+		_left_btn.texture_hover = left_tex
+		_left_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	else:
+		# Fallback: show unicode arrow so button is still usable before import
+		var lbl := Label.new()
+		lbl.text = "◀"
+		lbl.set_anchors_preset(Control.PRESET_CENTER)
+		lbl.add_theme_font_size_override("font_size", 36)
+		_left_btn.add_child(lbl)
 	_left_btn.custom_minimum_size = btn_size
 	_left_btn.anchor_left = 0.0
 	_left_btn.anchor_top = 1.0
@@ -227,12 +243,19 @@ func _build_touch_controls():
 	_left_btn.button_up.connect(func(): _left_btn.modulate = Color.WHITE)
 	add_child(_left_btn)
 
-	# — Right button (bottom-right): pixel art TextureButton —
+	# — Right button (bottom-right) —
 	_right_btn = TextureButton.new()
-	_right_btn.texture_normal = RIGHT_BTN_TEX
-	_right_btn.texture_pressed = RIGHT_BTN_TEX
-	_right_btn.texture_hover = RIGHT_BTN_TEX
-	_right_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	if right_tex:
+		_right_btn.texture_normal = right_tex
+		_right_btn.texture_pressed = right_tex
+		_right_btn.texture_hover = right_tex
+		_right_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	else:
+		var lbl := Label.new()
+		lbl.text = "▶"
+		lbl.set_anchors_preset(Control.PRESET_CENTER)
+		lbl.add_theme_font_size_override("font_size", 36)
+		_right_btn.add_child(lbl)
 	_right_btn.custom_minimum_size = btn_size
 	_right_btn.anchor_left = 1.0
 	_right_btn.anchor_top = 1.0
