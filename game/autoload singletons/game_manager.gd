@@ -150,9 +150,8 @@ func game_over(win: bool):
 	GameTimer.stop_timer()
 
 	if win:
-		# For wins: freeze the world but let the antipode animation run.
-		# antipode_zoom_transition.gd will call show_win_popup() when it's done.
-		get_tree().paused = true
+		# Freeze gameplay scene without pausing the entire tree so music keeps running.
+		_freeze_active_game_scene()
 		if location_lat != 0.0 and not GOOGLE_API_KEY.is_empty():
 			get_tree().change_scene_to_file.call_deferred("res://game/ui/antipode_zoom_transition.tscn")
 		else:
@@ -166,14 +165,14 @@ func game_over(win: bool):
 	if game_screenshots.size() > 0:
 		_death_screenshot = game_screenshots.back()
 
-	get_tree().paused = true
+	# Freeze gameplay scene without pausing global systems/audio.
+	_freeze_active_game_scene()
 
 	_show_popup(false)
 
 
 ## Called by antipode_zoom_transition.gd after its animation finishes.
 func show_win_popup() -> void:
-	get_tree().paused = true
 	_show_popup(true)
 
 
@@ -214,7 +213,6 @@ func _pick_random_screenshot() -> Image:
 
 func _on_play_again_button_pressed():
 	game_over_container.hide()
-	get_tree().paused = false
 	run_game(game_scene_to_load)
 
 
@@ -224,9 +222,14 @@ func _on_exit_button_pressed():
 
 func load_main_menu():
 	game_over_container.hide()
-	get_tree().paused = false
 	get_tree().change_scene_to_packed.call_deferred(main_menu)
 
 
 func is_ingame()-> bool:
 	return get_tree().current_scene is Game
+
+
+func _freeze_active_game_scene():
+	var scene: Node = get_tree().current_scene
+	if scene:
+		scene.process_mode = Node.PROCESS_MODE_DISABLED

@@ -466,8 +466,8 @@ func get_tile_distance(tile: Vector2i)-> int:
 
 
 func die():
-	if is_instance_valid(Global.game) and Global.game.has_method("on_player_death_for_respawn"):
-		Global.game.on_player_death_for_respawn()
+	if is_instance_valid(Global.game) and Global.game.has_method("on_player_death_started"):
+		Global.game.on_player_death_started()
 	state_machine.change_state(state_machine.dying_state)
 	on_death()
 
