@@ -4,15 +4,25 @@ extends CanvasLayer
 ##   • Full-screen section title card on layer transitions
 ##   • Section name with animated fade-in on section change
 ##   • Depth meter (top-right)
-##   • Antipode progress bar (left edge) — also drives bar color by temperature/pressure stress
+##   • Depth bar (left edge) — custom-drawn with section ticks, player pip, checkpoint markers
 
 @onready var section_label: Label = $SectionPanel/SectionLabel
 @onready var depth_label: Label = $DepthPanel/DepthLabel
 @onready var section_panel: PanelContainer = $SectionPanel
-@onready var depth_bar: ProgressBar = $ProgressContainer/DepthBar
+@onready var depth_bar: ProgressBar = $ProgressContainer/BarArea/DepthBar
 @onready var depth_percent: Label = $ProgressContainer/DepthPercent
+@onready var bar_area: Control = $ProgressContainer/BarArea
 
 const BOTTOM_LIMIT: float = 1050.0
+
+## Section boundary fractions along the bar (0=top, 1=bottom)
+const SECTION_BOUNDARIES: Array = [
+	{"name": "C",  "fraction": 0.0,   "color": Color(0.55, 0.35, 0.17)},  # Crust start
+	{"name": "M",  "fraction": 300.0/1050.0,  "color": Color(1.0, 0.45, 0.15)},  # Mantle
+	{"name": "K",  "fraction": 450.0/1050.0,  "color": Color(0.9, 0.15, 0.1)},   # Core
+	{"name": "M2", "fraction": 600.0/1050.0,  "color": Color(1.0, 0.45, 0.15)},  # Mantle-2
+	{"name": "C2", "fraction": 750.0/1050.0,  "color": Color(0.55, 0.35, 0.17)}, # Crust-2
+]
 
 var display_tween: Tween
 
@@ -22,6 +32,15 @@ var _title_label: Label
 var _subtitle_label: Label
 var _title_tween: Tween
 
+## Current player depth fraction for the bar overlay
+var _player_fraction: float = 0.0
+## Activated checkpoint fractions
+var _checkpoint_fractions: Array = []
+## Pip glow pulse
+var _pip_pulse: float = 0.0
+## Bar fill color for overlay
+var _bar_color: Color = Color(0.15, 0.85, 0.45)
+
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -29,6 +48,8 @@ func _ready():
 	hide()
 	_build_title_overlay()
 	call_deferred("_connect_signals")
+	# Connect bar_area draw call
+	bar_area.draw.connect(_draw_bar_overlay)
 
 
 func _connect_signals():
@@ -44,7 +65,7 @@ func _on_scene_changed(_node: Node):
 		hide()
 
 
-func _process(_delta: float):
+func _process(delta: float):
 	if not visible:
 		return
 	if not GameManager.is_ingame():
@@ -58,10 +79,14 @@ func _process(_delta: float):
 
 	# Update depth progress bar
 	var fraction: float = clamp(float(player_y) / BOTTOM_LIMIT, 0.0, 1.0)
+	_player_fraction = fraction
 	depth_bar.value = fraction * 100.0
 	depth_percent.text = "%d%%" % int(fraction * 100)
 
-	# Dynamically color the bar: green → orange → red as depth increases
+	# Pip glow pulse (~2 Hz)
+	_pip_pulse = (sin(Time.get_ticks_msec() / 250.0) + 1.0) / 2.0
+
+	# Dynamically color the bar: green → orange → red → purple
 	var bar_color: Color
 	if fraction < 0.4:
 		bar_color = Color(0.15, 0.85, 0.45).lerp(Color(1.0, 0.65, 0.1), fraction / 0.4)
@@ -69,10 +94,74 @@ func _process(_delta: float):
 		bar_color = Color(1.0, 0.65, 0.1).lerp(Color(0.95, 0.2, 0.1), (fraction - 0.4) / 0.35)
 	else:
 		bar_color = Color(0.95, 0.2, 0.1).lerp(Color(0.6, 0.0, 0.6), (fraction - 0.75) / 0.25)
+	_bar_color = bar_color
 
 	var fill_style: StyleBoxFlat = depth_bar.get_theme_stylebox("fill") as StyleBoxFlat
 	if fill_style:
 		fill_style.bg_color = bar_color
+
+	# Sync checkpoint fractions from SectionManager
+	_checkpoint_fractions.clear()
+	for cp_y in SectionManager.checkpoints_activated:
+		_checkpoint_fractions.append(clamp(float(cp_y) / BOTTOM_LIMIT, 0.0, 1.0))
+
+	# Trigger bar overlay redraw
+	bar_area.queue_redraw()
+
+
+## Draw section tick marks, player pip, and checkpoint markers on top of the ProgressBar.
+## Called via bar_area.draw signal.
+func _draw_bar_overlay():
+	var w: float = bar_area.size.x
+	var h: float = bar_area.size.y
+	var bar_x: float = w * 0.5
+
+	# ── Section boundary tick marks ────────────────────────────────────────
+	for i in range(1, SECTION_BOUNDARIES.size()):  # skip 0 (top edge)
+		var bd = SECTION_BOUNDARIES[i]
+		var y: float = bd.fraction * h
+		var col: Color = bd.color
+
+		# Tick line across full width
+		bar_area.draw_line(Vector2(0, y), Vector2(w, y), Color(col.r, col.g, col.b, 0.6), 1.5, true)
+
+		# Small label to the right (abbreviation)
+		var font := ThemeDB.fallback_font
+		bar_area.draw_string(font, Vector2(w + 3, y + 4), bd.name,
+			HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(col.r, col.g, col.b, 0.75))
+
+	# ── Checkpoint diamond markers ─────────────────────────────────────────
+	for cp_f in _checkpoint_fractions:
+		var y: float = cp_f * h
+		var diamond_size: float = 5.0
+		var pts := PackedVector2Array([
+			Vector2(bar_x, y - diamond_size),
+			Vector2(bar_x + diamond_size, y),
+			Vector2(bar_x, y + diamond_size),
+			Vector2(bar_x - diamond_size, y),
+		])
+		bar_area.draw_colored_polygon(pts, Color(0.3, 0.9, 1.0, 0.85))
+		bar_area.draw_polyline(PackedVector2Array([pts[0], pts[1], pts[2], pts[3], pts[0]]),
+			Color(1.0, 1.0, 1.0, 0.5), 1.0, true)
+
+	# ── Player position pip (glowing dot) ─────────────────────────────────
+	var pip_y: float = _player_fraction * h
+	var pip_r: float = 5.0
+	var glow_r: float = lerp(8.0, 11.0, _pip_pulse)
+	var pip_col: Color = _bar_color
+
+	# Outer glow ring
+	bar_area.draw_circle(Vector2(bar_x, pip_y), glow_r,
+		Color(pip_col.r, pip_col.g, pip_col.b, 0.18 * _pip_pulse))
+	# Mid glow
+	bar_area.draw_circle(Vector2(bar_x, pip_y), pip_r + 2,
+		Color(pip_col.r, pip_col.g, pip_col.b, 0.35))
+	# Core pip
+	bar_area.draw_circle(Vector2(bar_x, pip_y), pip_r,
+		Color(1.0, 1.0, 1.0, 0.95))
+	# Center dot
+	bar_area.draw_circle(Vector2(bar_x, pip_y), 2.5,
+		Color(pip_col.r * 0.6, pip_col.g * 0.6, pip_col.b * 0.6, 1.0))
 
 
 func _on_section_changed(_old_section: String, new_section: String):
@@ -193,7 +282,7 @@ func _get_section_subtitle(section_name: String) -> String:
 		"Mantle":
 			return "Heat rises"
 		"Core":
-			return "Extreme conditions Beware!"
+			return "Extreme conditions — Beware!"
 		"Mantle-2":
 			return "Coming back up!"
 		"Crust-2":

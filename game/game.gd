@@ -6,44 +6,61 @@ signal game_is_over
 @export var world: World
 @export var settings: GameSettings
 @export var cheats: Cheats
-@export var can_toggle_cheats: bool= true
+@export var can_toggle_cheats: bool = true
 @export var player_scene: PackedScene
 
 @onready var camera = $Camera2D
 
 var player: BasePlayer
 
+## -1 = infinite (Easy), otherwise counts down each death
+var lives_remaining: int = -1
+
+## Ore snapshot for Easy mode — saved before death, restored after respawn
+var _saved_ore_counts: Dictionary = {}
 
 
 func _init():
-	Global.game= self
-	
+	Global.game = self
+
 
 func _ready():
-	get_tree().paused= false
+	get_tree().paused = false
 	SectionManager.reset()
 
 	game_is_over.connect(GameManager.game_over)
 
 	if not settings:
-		settings= GameSettings.new()
+		settings = GameSettings.new()
 
 	if not cheats:
-		cheats= Cheats.new()
-	
+		cheats = Cheats.new()
+
 	if not world:
-		world= get_node_or_null("World")
+		world = get_node_or_null("World")
 		assert(world)
-	
+
 	if GameManager.character:
-		player_scene= GameManager.character
-	
+		player_scene = GameManager.character
+
 	if not player_scene:
-		player_scene= DataManager.characters.front()
+		player_scene = DataManager.characters.front()
+
+	# Apply selected difficulty from GameManager
+	settings.difficulty = GameManager.selected_difficulty as GameSettings.Difficulty
+
+	# Set starting lives
+	match settings.difficulty:
+		GameSettings.Difficulty.EASY:
+			lives_remaining = -1   # infinite
+		GameSettings.Difficulty.HARD:
+			lives_remaining = 3
+		GameSettings.Difficulty.HELL:
+			lives_remaining = 1
 
 	set_process(false)
 	await world.initialization_finished
-	
+
 	if not player:
 		spawn_player.call_deferred()
 
@@ -60,37 +77,73 @@ func pre_start():
 
 
 func _process(_delta):
-	# Disabled free cam and fly cheats for auto-mine game
 	pass
 
 
 func spawn_player():
 	assert(player_scene)
 	assert(player == null)
-	player= player_scene.instantiate()
+	player = player_scene.instantiate()
 
 	# Use checkpoint position if one has been activated, otherwise default spawn
 	var respawn_pos: Vector2i = SectionManager.get_respawn_position()
 	if respawn_pos != Vector2i.ZERO:
 		player.position = Vector2(respawn_pos) * World.TILE_SIZE
 	else:
-		player.position= settings.player_spawn
+		player.position = settings.player_spawn
 
 	add_child.call_deferred(player)
 	player.ready.connect(on_player_spawned)
 
-	camera.follow_node= player
+	camera.follow_node = player
 
-	player.tree_exited.connect(respawn if settings.respawn_on_death else game_over.bind(false))
+	# Route all deaths to the unified handler
+	player.tree_exited.connect(_on_player_died)
+	# Snapshot ores just before the player node leaves the tree (Easy mode)
+	player.tree_exiting.connect(_snapshot_ores)
+
+
+## Called every time the player dies (tree_exited fires after player node is freed).
+func _on_player_died():
+	match settings.difficulty:
+		GameSettings.Difficulty.EASY:
+			# Ore counts were saved in _on_player_health_zero — restore on next spawn
+			if is_inside_tree():
+				spawn_player.call_deferred()
+
+		GameSettings.Difficulty.HARD:
+			lives_remaining -= 1
+			if lives_remaining > 0:
+				# Ores are naturally wiped (new player node = fresh OreCounter)
+				if is_inside_tree():
+					spawn_player.call_deferred()
+			else:
+				game_over(false)
+
+		GameSettings.Difficulty.HELL:
+			game_over(false)
+
+
+## Called just before the player node is freed (connect in on_player_spawned).
+## Snapshots ore counts for Easy mode so we can restore them after respawn.
+func _snapshot_ores():
+	if settings.difficulty == GameSettings.Difficulty.EASY and player:
+		_saved_ore_counts = player.ore_counter.counts.duplicate()
+
+
+func on_player_spawned():
+	# Restore ore counts in Easy mode (new player node starts empty)
+	if settings.difficulty == GameSettings.Difficulty.EASY and not _saved_ore_counts.is_empty():
+		for ore_name in _saved_ore_counts:
+			if ore_name in player.ore_counter.counts:
+				player.ore_counter.counts[ore_name] = _saved_ore_counts[ore_name]
+		player.ore_counter.updated.emit()
+		_saved_ore_counts.clear()
 
 
 func respawn():
 	if is_inside_tree():
 		spawn_player.call_deferred()
-
-
-func on_player_spawned():
-	pass
 
 
 func game_over(win: bool):

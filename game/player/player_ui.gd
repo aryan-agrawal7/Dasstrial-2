@@ -19,6 +19,10 @@ extends CanvasLayer
 ## References to ore count labels, keyed by ore item name
 var ore_labels: Dictionary = {}
 
+## Lives display pip nodes
+var _lives_pips: Array = []
+var _lives_container: HBoxContainer
+
 
 
 ## Red screen-edge vignette overlay
@@ -34,6 +38,9 @@ var _upgrade_btn: Button
 func _ready():
 	assert(player)
 	assert(health)
+
+	# Build the lives display
+	_build_lives_display()
 
 	# Build the red vignette overlay (full-screen, above everything)
 	_build_danger_vignette()
@@ -52,6 +59,7 @@ func _process(_delta):
 	update_health()
 	update_subsystems()
 	_update_danger_vignette()
+	_update_lives_display()
 
 
 func _connect_ore_counter():
@@ -99,7 +107,87 @@ func update_health():
 
 
 
+
+func _build_lives_display() -> void:
+	## Build a small lives indicator widget in the top-center, just below the gauges.
+	_lives_container = HBoxContainer.new()
+	_lives_container.anchor_left = 0.5
+	_lives_container.anchor_top = 0.0
+	_lives_container.anchor_right = 0.5
+	_lives_container.anchor_bottom = 0.0
+	# Sit below the gauge row (gauges are 90px + margin ~10 = ~100px from top)
+	_lives_container.offset_top = 108
+	_lives_container.offset_left = -60
+	_lives_container.offset_right = 60
+	_lives_container.offset_bottom = 130
+	_lives_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_lives_container.add_theme_constant_override("separation", 6)
+	add_child(_lives_container)
+
+	var difficulty: int = GameManager.selected_difficulty
+
+	if difficulty == 0:  # EASY
+		var lbl := Label.new()
+		lbl.text = "EASY  ∞"
+		var ls := LabelSettings.new()
+		ls.font_size = 14
+		ls.font_color = Color(0.4, 1.0, 0.55, 0.85)
+		ls.outline_size = 2
+		ls.outline_color = Color(0, 0, 0, 0.7)
+		lbl.label_settings = ls
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_lives_container.add_child(lbl)
+	elif difficulty == 1:  # HARD — 3 heart pips
+		var prefix := Label.new()
+		prefix.text = "HARD"
+		var pls := LabelSettings.new()
+		pls.font_size = 14
+		pls.font_color = Color(0.95, 0.65, 0.1, 0.85)
+		pls.outline_size = 2
+		pls.outline_color = Color(0, 0, 0, 0.7)
+		prefix.label_settings = pls
+		_lives_container.add_child(prefix)
+		for i in range(3):
+			var pip := Label.new()
+			pip.text = "♥"
+			var ls := LabelSettings.new()
+			ls.font_size = 16
+			ls.font_color = Color(0.95, 0.2, 0.2, 1.0)
+			ls.outline_size = 2
+			ls.outline_color = Color(0, 0, 0, 0.8)
+			pip.label_settings = ls
+			_lives_container.add_child(pip)
+			_lives_pips.append(pip)
+	else:  # HELL
+		var lbl := Label.new()
+		lbl.text = "HELL  💀"
+		var ls := LabelSettings.new()
+		ls.font_size = 14
+		ls.font_color = Color(0.85, 0.1, 0.1, 0.9)
+		ls.outline_size = 2
+		ls.outline_color = Color(0, 0, 0, 0.7)
+		lbl.label_settings = ls
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_lives_container.add_child(lbl)
+
+
+func _update_lives_display() -> void:
+	## Dim Hard-mode pips as lives are spent.
+	if GameManager.selected_difficulty != 1:
+		return
+	if not Global.game:
+		return
+	var lives: int = Global.game.lives_remaining
+	for i in range(_lives_pips.size()):
+		var pip: Label = _lives_pips[i]
+		if i < lives:
+			pip.label_settings.font_color = Color(0.95, 0.2, 0.2, 1.0)
+		else:
+			pip.label_settings.font_color = Color(0.35, 0.35, 0.35, 0.45)
+
+
 func _build_danger_vignette() -> void:
+
 	var shader := Shader.new()
 	shader.code = "
 	shader_type canvas_item;
