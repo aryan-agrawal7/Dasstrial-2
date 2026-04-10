@@ -21,6 +21,10 @@ var _debounce_timer: Timer
 var _autocomplete_http: HTTPRequest
 var _place_details_http: HTTPRequest
 
+## Difficulty selector nodes (built dynamically)
+var _difficulty_option: OptionButton
+var _difficulty_desc: Label
+
 
 func _ready():
 	get_tree().paused= false
@@ -35,6 +39,9 @@ func _ready():
 	
 	# Location autocomplete setup
 	_setup_location_autocomplete()
+
+	# Difficulty selector (injected before the Play button)
+	call_deferred("_build_difficulty_selector")
 
 
 func _setup_location_autocomplete():
@@ -151,6 +158,64 @@ func _on_close_button_pressed():
 	get_tree().quit()
 
 
+func _build_difficulty_selector() -> void:
+	## Find the VBoxContainer that holds the skin/location/play UI
+	## and inject the difficulty selector just before the Play button.
+	var play_btn: Button = get_node_or_null(
+		"PanelContainer/MarginContainer/VBoxContainer/Main Content MarginContainer/HBoxContainer/VBoxContainer/Play Button")
+	if not play_btn:
+		return
+	var vbox: VBoxContainer = play_btn.get_parent()
+	var play_idx: int = play_btn.get_index()
+
+	# Separator label
+	var diff_hdr := Label.new()
+	diff_hdr.text = "Difficulty"
+	diff_hdr.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8, 0.9))
+	vbox.add_child(diff_hdr)
+	vbox.move_child(diff_hdr, play_idx)
+
+	# OptionButton
+	_difficulty_option = OptionButton.new()
+	_difficulty_option.add_item("Easy")
+	_difficulty_option.add_item("Hard")
+	_difficulty_option.add_item("Hell")
+	_difficulty_option.selected = 0
+	_difficulty_option.custom_minimum_size = Vector2(0, 36)
+	_difficulty_option.add_theme_font_size_override("font_size", 16)
+	vbox.add_child(_difficulty_option)
+	vbox.move_child(_difficulty_option, play_idx + 1)
+
+	# Descriptor label
+	_difficulty_desc = Label.new()
+	_difficulty_desc.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_difficulty_desc.add_theme_font_size_override("font_size", 13)
+	vbox.add_child(_difficulty_desc)
+	vbox.move_child(_difficulty_desc, play_idx + 2)
+
+	_difficulty_option.item_selected.connect(_on_difficulty_selected)
+	_on_difficulty_selected(0)  # Set default text
+
+
+## Difficulty descriptions shown below the dropdown
+const DIFF_DESCRIPTIONS: Array = [
+	"∞ lives  •  keep resources on respawn",
+	"3 lives  •  lose resources on respawn",
+	"1 life  •  no respawn",
+]
+const DIFF_COLORS: Array = [
+	Color(0.35, 0.95, 0.5, 1.0),
+	Color(1.0, 0.65, 0.1, 1.0),
+	Color(0.95, 0.2, 0.15, 1.0),
+]
+
+func _on_difficulty_selected(idx: int) -> void:
+	if not _difficulty_desc:
+		return
+	_difficulty_desc.text = DIFF_DESCRIPTIONS[idx]
+	_difficulty_desc.add_theme_color_override("font_color", DIFF_COLORS[idx])
+
+
 func _on_play_button_pressed():
 	GameManager.world_seed = str(randi())
 	GameManager.character = DataManager.characters[0]
@@ -158,6 +223,9 @@ func _on_play_button_pressed():
 	GameManager.location_name = selected_location_name
 	GameManager.location_lat = selected_location_lat
 	GameManager.location_lng = selected_location_lng
+	# Store selected difficulty for the game session
+	if _difficulty_option:
+		GameManager.selected_difficulty = _difficulty_option.selected
 	# Always use Freeplay (first built-in scenario)
 	GameManager.game_scene_to_load = DataManager.builtin_scenarios[0]
 	

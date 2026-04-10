@@ -244,9 +244,11 @@ func _show_character_overlay():
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
 	await loc_tween.finished
 
+	# Hold so the player can enjoy the antipode view, then show the results popup.
+	await get_tree().create_timer(3.0).timeout
+	GameManager.show_win_popup()
 
 
 func _return_to_menu():
-	# Directly change to main menu — bypass load_main_menu() to avoid any state issues.
-	get_tree().paused = false
-	get_tree().change_scene_to_packed(GameManager.main_menu)
+	# Error branch (no API key etc.) — skip the map animation and show the win popup directly.
+	GameManager.show_win_popup()
