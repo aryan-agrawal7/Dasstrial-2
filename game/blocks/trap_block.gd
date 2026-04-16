@@ -71,7 +71,6 @@ func _shake_camera(player: BasePlayer, intensity: float, duration: float) -> voi
 	if not cam:
 		return
 
-	var original_offset := cam.offset
 	var shake_tween := cam.create_tween()
 	var steps := 6
 	var step_dur := duration / float(steps)
@@ -82,8 +81,8 @@ func _shake_camera(player: BasePlayer, intensity: float, duration: float) -> voi
 		)
 		# Decay intensity each step
 		rand_offset *= (1.0 - float(i) / float(steps))
-		shake_tween.tween_property(cam, "offset", original_offset + rand_offset, step_dur)
-	shake_tween.tween_property(cam, "offset", original_offset, step_dur)
+		shake_tween.tween_property(cam, "offset", rand_offset, step_dur)
+	shake_tween.tween_property(cam, "offset", Vector2.ZERO, step_dur)
 
 
 ## Spawn a floating damage label above the player that rises and fades out.
