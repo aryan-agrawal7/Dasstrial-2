@@ -299,13 +299,10 @@ func _build_touch_controls():
 	var btn_size := Vector2(110, 110)
 	var margin := 20
 
-	# Load pixel art textures at runtime (requires editor import pass first)
-	var left_tex: Texture2D = null
-	var right_tex: Texture2D = null
-	if ResourceLoader.exists(LEFT_BTN_PATH):
-		left_tex = load(LEFT_BTN_PATH)
-	if ResourceLoader.exists(RIGHT_BTN_PATH):
-		right_tex = load(RIGHT_BTN_PATH)
+	# Load pixel art textures directly from PNG files, bypassing Godot's
+	# import system (which may mark them as valid=false if never imported).
+	var left_tex: Texture2D = _load_png_texture(LEFT_BTN_PATH)
+	var right_tex: Texture2D = _load_png_texture(RIGHT_BTN_PATH)
 
 	# — Left button (bottom-left) —
 	_left_btn = TextureButton.new()
@@ -420,3 +417,29 @@ func _on_right_released():
 func _on_upgrade_pressed():
 	if player and player.t_menu:
 		player.t_menu.open()
+
+
+## Load an image file directly from disk, bypassing Godot's import system.
+## Handles files with incorrect extensions (e.g. JPEGs named .png).
+func _load_png_texture(res_path: String) -> Texture2D:
+	var abs_path: String = ProjectSettings.globalize_path(res_path)
+	var img := Image.new()
+	var err := img.load(abs_path)
+	
+	if err != OK:
+		# Fallback: the files are named .png but might actually be JPEGs
+		# Read raw bytes and try both formats manually
+		var file := FileAccess.open(abs_path, FileAccess.READ)
+		if file:
+			var buffer := file.get_buffer(file.get_length())
+			# Try PNG first
+			err = img.load_png_from_buffer(buffer)
+			# If it fails, try JPEG
+			if err != OK:
+				err = img.load_jpg_from_buffer(buffer)
+	
+	if err != OK:
+		push_warning("Failed to load image texture: %s (error %d)" % [abs_path, err])
+		return null
+		
+	return ImageTexture.create_from_image(img)
