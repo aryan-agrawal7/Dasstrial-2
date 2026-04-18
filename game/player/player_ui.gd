@@ -296,8 +296,8 @@ func update_subsystems():
 # ---- Touch Controls ----
 
 func _build_touch_controls():
-	var btn_size := Vector2(110, 110)
-	var margin := 20
+	var btn_size := Vector2(140, 140)
+	var margin := 24
 
 	# Load pixel art textures directly from PNG files, bypassing Godot's
 	# import system (which may mark them as valid=false if never imported).
@@ -310,13 +310,16 @@ func _build_touch_controls():
 		_left_btn.texture_normal = left_tex
 		_left_btn.texture_pressed = left_tex
 		_left_btn.texture_hover = left_tex
-		_left_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		# STRETCH_SCALE fills the full btn_size area; ignore_texture_size
+		# prevents the button from auto-resizing to the raw PNG dimensions.
+		_left_btn.stretch_mode = TextureButton.STRETCH_SCALE
+		_left_btn.ignore_texture_size = true
 	else:
 		# Fallback: show unicode arrow so button is still usable before import
 		var lbl := Label.new()
 		lbl.text = "◀"
 		lbl.set_anchors_preset(Control.PRESET_CENTER)
-		lbl.add_theme_font_size_override("font_size", 36)
+		lbl.add_theme_font_size_override("font_size", 48)
 		_left_btn.add_child(lbl)
 	_left_btn.custom_minimum_size = btn_size
 	_left_btn.anchor_left = 0.0
@@ -339,12 +342,13 @@ func _build_touch_controls():
 		_right_btn.texture_normal = right_tex
 		_right_btn.texture_pressed = right_tex
 		_right_btn.texture_hover = right_tex
-		_right_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+		_right_btn.stretch_mode = TextureButton.STRETCH_SCALE
+		_right_btn.ignore_texture_size = true
 	else:
 		var lbl := Label.new()
 		lbl.text = "▶"
 		lbl.set_anchors_preset(Control.PRESET_CENTER)
-		lbl.add_theme_font_size_override("font_size", 36)
+		lbl.add_theme_font_size_override("font_size", 48)
 		_right_btn.add_child(lbl)
 	_right_btn.custom_minimum_size = btn_size
 	_right_btn.anchor_left = 1.0

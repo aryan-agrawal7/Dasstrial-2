@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dcenejycwn1nh"
-valid=false
+path="res://.godot/imported/btn_right.png-3c9f18f7e71cdcda119b71eacb6cb981.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://game/ui/btn_right.png"
+dest_files=["res://.godot/imported/btn_right.png-3c9f18f7e71cdcda119b71eacb6cb981.ctex"]
 
 [params]
 
