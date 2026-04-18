@@ -58,6 +58,10 @@ folder_colors={
 
 import/blender/enabled=false
 
+[gui]
+
+theme/custom_font="uid://dpvt4gxqvbilq"
+
 [importer_defaults]
 
 texture={
