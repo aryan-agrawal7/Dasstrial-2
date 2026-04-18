@@ -7,6 +7,10 @@ extends CanvasLayer
 @onready var panel: CenterContainer = $CenterContainer
 @onready var button_container: VBoxContainer = $CenterContainer/VBoxContainer
 @onready var settings_overlay: CenterContainer = $CenterContainer/SettingsOverlay
+@onready var resume_button: TextureButton = %"ResumeButton"
+@onready var home_button: TextureButton = %"HomeButton"
+@onready var menu_button: TextureButton = %"MenuButton"
+@onready var exit_button: TextureButton = %"ExitButton"
 
 # --- Layout constants (must match .tscn values) ---
 const BUTTON_WIDTH := 352.0
@@ -26,6 +30,7 @@ func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_create_rope_style()
 	_create_side_ropes()
+	_wire_button_fx()
 	hide_menu()
 
 
@@ -225,3 +230,35 @@ func _on_settings_back_pressed():
 	_left_rope.visible = true
 	_right_rope.visible = true
 	_play_drop_animation()
+
+
+func _wire_button_fx() -> void:
+	for btn in [resume_button, home_button, menu_button, exit_button]:
+		if btn:
+			btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			btn.mouse_entered.connect(func(): _tween_pause_button(btn, Vector2(1.03, 1.03), Color(1.08, 1.08, 1.08, 1.0), 0.08))
+			btn.mouse_exited.connect(func(): _tween_pause_button(btn, Vector2.ONE, Color.WHITE, 0.08))
+			btn.button_down.connect(func(): _tween_pause_button(btn, Vector2(0.97, 0.97), Color(0.92, 0.92, 0.92, 1.0), 0.05))
+			btn.button_up.connect(func():
+				var target_scale := Vector2.ONE
+				var target_modulate := Color.WHITE
+				if btn.is_hovered():
+					target_scale = Vector2(1.03, 1.03)
+					target_modulate = Color(1.08, 1.08, 1.08, 1.0)
+				_tween_pause_button(btn, target_scale, target_modulate, 0.06)
+			)
+
+
+func _tween_pause_button(btn: TextureButton, target_scale: Vector2, target_modulate: Color, duration: float) -> void:
+	btn.pivot_offset = btn.size / 2.0
+	var existing: Tween = btn.get_meta("fx_tween") if btn.has_meta("fx_tween") else null
+	if existing:
+		existing.kill()
+	var tw := create_tween()
+	tw.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tw.set_trans(Tween.TRANS_BACK)
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(btn, "scale", target_scale, duration)
+	tw.parallel().tween_property(btn, "modulate", target_modulate, duration)
+	btn.set_meta("fx_tween", tw)

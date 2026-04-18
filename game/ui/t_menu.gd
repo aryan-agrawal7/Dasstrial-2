@@ -24,6 +24,7 @@ const BG_WIDTH := 768
 var player: BasePlayer
 var _root: Control          # full-screen root for centering
 var _bg: TextureRect        # T-menu.png background
+var _close_btn: TextureButton
 var _upgrade_btns: Array[TextureButton] = []
 var _upgrade_icons: Array[TextureRect] = []
 var _cost_labels: Array[Label] = []
@@ -129,16 +130,17 @@ func _build_ui():
 	main_container.add_child(_bg)
 
 	# --- Close button (top-right) ---
-	var close_btn = TextureButton.new()
-	close_btn.texture_normal = _tex_close
-	close_btn.ignore_texture_size = true
-	close_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	close_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	close_btn.custom_minimum_size = Vector2(45, 45)
-	close_btn.size = Vector2(45, 45)
-	close_btn.position = Vector2(BG_WIDTH - 55, 8)
-	close_btn.pressed.connect(close)
-	main_container.add_child(close_btn)
+	_close_btn = TextureButton.new()
+	_close_btn.texture_normal = _tex_close
+	_close_btn.ignore_texture_size = true
+	_close_btn.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	_close_btn.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_close_btn.custom_minimum_size = Vector2(45, 45)
+	_close_btn.size = Vector2(45, 45)
+	_close_btn.position = Vector2(BG_WIDTH - 55, 8)
+	_close_btn.pressed.connect(close)
+	main_container.add_child(_close_btn)
+	_wire_tmenu_hover_fx(_close_btn, 1.08)
 
 	# --- Upgrades row ---
 	# We position 5 columns evenly across the background width.
@@ -161,6 +163,7 @@ func _build_ui():
 		arrow_btn.size = Vector2(ICON_SIZE, ICON_SIZE)
 		arrow_btn.position = Vector2(slot_center_x - ICON_SIZE / 2.0, arrow_y)
 		arrow_btn.pressed.connect(_on_upgrade_pressed.bind(i))
+		_wire_tmenu_hover_fx(arrow_btn, 1.04)
 		main_container.add_child(arrow_btn)
 		_upgrade_btns.append(arrow_btn)
 
@@ -229,6 +232,35 @@ func _play_click_anim(btn: TextureButton):
 	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tw.tween_property(btn, "scale", Vector2(0.7, 0.7), 0.08).set_ease(Tween.EASE_IN)
 	tw.tween_property(btn, "scale", Vector2(1.0, 1.0), 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
+
+func _wire_tmenu_hover_fx(btn: TextureButton, hover_scale: float) -> void:
+	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.mouse_entered.connect(func():
+		if btn.disabled:
+			return
+		_tween_tmenu_hover(btn, Vector2(hover_scale, hover_scale), Color(1.1, 1.1, 1.1, 1.0), 0.08)
+	)
+	btn.mouse_exited.connect(func():
+		if btn.disabled:
+			return
+		_tween_tmenu_hover(btn, Vector2.ONE, Color.WHITE, 0.08)
+	)
+
+
+func _tween_tmenu_hover(btn: TextureButton, target_scale: Vector2, target_modulate: Color, duration: float) -> void:
+	btn.pivot_offset = btn.size / 2.0
+	var existing: Tween = btn.get_meta("hover_tween") if btn.has_meta("hover_tween") else null
+	if existing:
+		existing.kill()
+	var tw := create_tween()
+	tw.set_process_mode(Tween.TWEEN_PROCESS_PHYSICS)
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tw.set_trans(Tween.TRANS_BACK)
+	tw.set_ease(Tween.EASE_OUT)
+	tw.tween_property(btn, "scale", target_scale, duration)
+	tw.parallel().tween_property(btn, "modulate", target_modulate, duration)
+	btn.set_meta("hover_tween", tw)
 
 
 func _update_buttons():
