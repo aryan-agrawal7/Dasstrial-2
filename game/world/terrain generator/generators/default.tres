@@ -10,15 +10,16 @@
 [ext_resource type="Resource" uid="uid://cjykj5i260i0c" path="res://game/blocks/air block/air_block.tres" id="7_7pv86"]
 [ext_resource type="Resource" uid="uid://8qexa73jgb56" path="res://game/blocks/diamond block/diamond_block.tres" id="7_b607x"]
 [ext_resource type="Resource" uid="uid://bcgd2xhiy1kks" path="res://game/blocks/gold block/gold_block.tres" id="8_gold"]
-[ext_resource type="Resource" uid="uid://b3kw8v9n2hpq7e" path="res://game/blocks/water_pod_block/water_pod_block.tres" id="9_water"]
+[ext_resource type="Resource" uid="uid://qfchdx1ghq25" path="res://game/blocks/water_pod_block/water_pod_block.tres" id="9_water"]
 [ext_resource type="Resource" uid="uid://yri6lpsfowbb" path="res://game/blocks/oxygen_pod_block/oxygen_pod_block.tres" id="10_oxygen"]
-[ext_resource type="Resource" uid="uid://gtrap11gas001" path="res://game/blocks/gas_trap_block.tres" id="11_gas_trap"]
-[ext_resource type="Resource" uid="uid://ftrap22gold02" path="res://game/blocks/fools_gold_trap_block.tres" id="12_fools_gold"]
+[ext_resource type="Resource" uid="uid://cyde4y36pl5aa" path="res://game/blocks/gas_trap_block.tres" id="11_gas_trap"]
+[ext_resource type="Resource" uid="uid://byde40464eiab" path="res://game/blocks/fools_gold_trap_block.tres" id="12_fools_gold"]
 [ext_resource type="Resource" uid="uid://dtrap33dens03" path="res://game/blocks/density_trap_block.tres" id="13_density_trap"]
 
 [sub_resource type="Resource" id="Resource_qdcf6"]
 script = ExtResource("2_od3kv")
 blocks = Array[ExtResource("2_gceg7")]([ExtResource("1_6kp5u")])
+spawn_weights = null
 
 [sub_resource type="Resource" id="Resource_62246"]
 script = ExtResource("3_1dayd")
@@ -53,6 +54,7 @@ script = ExtResource("2_od3kv")
 blocks = Array[ExtResource("2_gceg7")]([ExtResource("7_7pv86")])
 noise = SubResource("FastNoiseLite_6losj")
 noise_threshold = 0.5
+spawn_weights = null
 
 [sub_resource type="Resource" id="Resource_wdpor"]
 script = ExtResource("3_1dayd")
