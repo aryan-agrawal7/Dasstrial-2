@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="Item" format=3 uid="uid://bj7ore4godot1"]
 
 [ext_resource type="Script" path="res://game/items/item.gd" id="1_godot"]
-[ext_resource type="Texture2D" uid="uid://cj2nv3bk1icj0" path="res://game/blocks/diamond block/diamond.png" id="2_godot"]
+[ext_resource type="Texture2D" path="res://game/items/diamond ore/diamond.png" id="2_godot"]
 
 [resource]
 script = ExtResource("1_godot")

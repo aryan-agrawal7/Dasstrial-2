@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://xsms438c3077" path="res://game/items/item.gd" id="1_3y787"]
 [ext_resource type="Script" uid="uid://d4mod5cyhdbbi" path="res://game/tags/tag.gd" id="2_ltglo"]
-[ext_resource type="Texture2D" uid="uid://cj1nb3ibx7llb" path="res://game/blocks/water blocks/water_quarter.png" id="3_ltglo"]
+[ext_resource type="Texture2D" path="res://game/items/oxygen_pod/oxygen_pod.png" id="3_ltglo"]
 
 [resource]
 script = ExtResource("1_3y787")
