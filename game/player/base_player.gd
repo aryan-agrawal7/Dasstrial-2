@@ -7,6 +7,8 @@ signal break_block(block: Block)
 const FLY_SPEED_FACTOR= 4.0
 const FinishBlockScript = preload("res://game/blocks/finish_block.gd")
 const DIG_SFX: AudioStream = preload("res://game/audio/sounds/dig_block.ogg")
+const WATER_SUIT_PATH: String = "res://game/Water-air.png"
+const FIRE_SUIT_PATH: String = "res://game/Fire-strcuture.png"
 
 @export_category("Movement")
 @export var speed: float = 200.0
@@ -70,6 +72,9 @@ var POD_OXYGEN: Item = preload("res://game/items/oxygen_pod/oxygen_pod.tres")
 var max_hull_temp: float = 100.0
 var max_integrity: float = 100.0
 var max_sharpness: float = 100.0
+var temp_drain_multiplier: float = 1.0
+var integrity_drain_multiplier: float = 1.0
+var sharpness_drain_multiplier: float = 1.0
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
@@ -106,6 +111,7 @@ var visibility_shrink_interval: float = 24.0 # Shrinks every 84s to scale with 7
 
 func _ready():
 	assert_export_scenes()
+	_apply_suit_modifiers()
 
 	var game: Game= get_parent()
 	assert(game)
@@ -230,12 +236,12 @@ func _tick_environmental_damage(delta: float):
 	var f: float = clamp(1.0 - dist / max_dist, 0.0, 1.0)
 
 	## ── Temperature → hull temp (quadratic, peaks at Core) ──────────────────
-	var temp_drain: float = 8.0 * pow(f, 2.2) * delta
-	hull_temp = max(0.0, hull_temp - temp_drain)
+	var temp_drain: float = 8.0 * pow(f, 2.2) * delta * temp_drain_multiplier
+	apply_temperature_drain(temp_drain)
 
 	## ── Pressure → hull integrity (peaks at Core, drops away from it) ───────
-	var integrity_drain: float = (0.5 + 3.0 * f + 1.5 * sin(f * PI)) * 0.25 * delta
-	hull_integrity = max(0.0, hull_integrity - integrity_drain)
+	var integrity_drain: float = (0.5 + 3.0 * f + 1.5 * sin(f * PI)) * 0.25 * delta * integrity_drain_multiplier
+	apply_integrity_drain(integrity_drain)
 
 	## ── Health only drains when hull systems are breached ────────────────────
 	var hp_drain: float = 0.0
@@ -245,6 +251,42 @@ func _tick_environmental_damage(delta: float):
 		hp_drain += 7.0 * delta    # Pressure breach
 	if hp_drain > 0.0:
 		health.receive_damage(Damage.new(hp_drain, Damage.Type.ENVIRONMENT))
+
+
+func _apply_suit_modifiers():
+	# Defaults for any unspecified skin.
+	temp_drain_multiplier = 1.0
+	integrity_drain_multiplier = 1.0
+	sharpness_drain_multiplier = 1.0
+
+	var skin_path: String = GameManager.skin_path
+	if skin_path.is_empty():
+		skin_path = WATER_SUIT_PATH
+
+	# Fire-Structure (orange): higher temperature resistance.
+	if skin_path == FIRE_SUIT_PATH:
+		temp_drain_multiplier = 0.65
+		integrity_drain_multiplier = 1.0
+		sharpness_drain_multiplier = 1.0
+		return
+
+	# Water-Air (blue): more durable hull systems (pressure + drill sharpness resistance).
+	if skin_path == WATER_SUIT_PATH:
+		temp_drain_multiplier = 1.0
+		integrity_drain_multiplier = 0.7
+		sharpness_drain_multiplier = 0.7
+
+
+func apply_temperature_drain(amount: float):
+	hull_temp = max(0.0, hull_temp - amount)
+
+
+func apply_integrity_drain(amount: float):
+	hull_integrity = max(0.0, hull_integrity - amount)
+
+
+func apply_sharpness_drain(amount: float):
+	drill_sharpness = max(0.0, drill_sharpness - amount * sharpness_drain_multiplier)
 
 
 
@@ -362,8 +404,7 @@ func try_auto_mine_block(world: World, pos: Vector2i):
 		return
 	var block: Block = world.get_block(pos)
 	if block and block.can_be_mined():
-		drill_sharpness -= block.hardness * 0.25
-		drill_sharpness = max(drill_sharpness, 0)
+		apply_sharpness_drain(block.hardness * 0.25)
 		# If the block drops an item, add it directly to the ore counter
 		if block.drop:
 			ore_counter.add_ore(block.drop)
