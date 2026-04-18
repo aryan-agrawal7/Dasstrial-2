@@ -28,7 +28,7 @@ func on_mined(world: World, tile_pos: Vector2i, player: BasePlayer):
 		
 		TrapType.HEAT_BURST:
 			if is_instance_valid(player):
-				player.hull_temp = max(0.0, player.hull_temp - damage_value)
+				player.apply_temperature_drain(damage_value)
 				# Also deal direct HP damage so it's noticeable
 				if player.health and player.health.is_inside_tree():
 					var hp_dmg := damage_value * 0.4
@@ -39,7 +39,7 @@ func on_mined(world: World, tile_pos: Vector2i, player: BasePlayer):
 				
 		TrapType.SHARPENER_DRAIN:
 			if is_instance_valid(player):
-				player.drill_sharpness = max(0.0, player.drill_sharpness - damage_value)
+				player.apply_sharpness_drain(damage_value)
 				# Also deal some HP damage
 				if player.health and player.health.is_inside_tree():
 					var hp_dmg := damage_value * 0.25
